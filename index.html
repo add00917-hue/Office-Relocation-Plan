@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1b2e6b">
+<title>Office Relocation Plan · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f6fb; --card:#ffffff; --ink:#1b2431; --ink-soft:#5b6678;
+    --line:#e6eaf2; --accent:#1b2e6b; --accent-soft:#eef1f9; --cal-empty:#dde1e9;
+    --shadow:0 2px 10px rgba(20,30,60,.06); --tab:#ffffff; --tabink:#8a93a8; --sb:#c7cfdd;
+  }
+  body.dark{
+    --paper:#0e131e; --card:#182031; --ink:#e8ebf3; --ink-soft:#94a0b8;
+    --line:#28313f; --accent:#6f8bde; --accent-soft:#1e2940; --cal-empty:#2a3446;
+    --shadow:0 2px 12px rgba(0,0,0,.35); --tab:#141b28; --tabink:#8793aa; --sb:#39465b;
+  }
+  *{scrollbar-width:thin; scrollbar-color:var(--sb) transparent}
+  *::-webkit-scrollbar{width:8px; height:8px}
+  *::-webkit-scrollbar-thumb{background:var(--sb); border-radius:99px; border:2px solid transparent; background-clip:padding-box}
+  *::-webkit-scrollbar-thumb:active{background:var(--ink-soft); background-clip:padding-box}
+  *::-webkit-scrollbar-track{background:transparent}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans Thai",system-ui,sans-serif; line-height:1.4; -webkit-font-smoothing:antialiased; overscroll-behavior-y:none}
+  .app{height:100dvh; display:flex; flex-direction:column; max-width:520px; margin:0 auto; position:relative; background:var(--paper)}
+  .screen{position:absolute; inset:0; display:none; flex-direction:column}
+  .screen.on{display:flex}
+
+  .mhead{background:var(--card); border-bottom:1px solid var(--line); padding:calc(12px + env(safe-area-inset-top)) 15px 12px; z-index:5}
+  .hrow{display:flex; align-items:center; gap:11px}
+  .mtitle{font-size:19px; font-weight:700; letter-spacing:-.01em; line-height:1.15}
+  .msub{font-size:11.5px; color:var(--ink-soft); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .backbtn{flex:0 0 auto; width:36px; height:36px; border-radius:11px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:20px; cursor:pointer; display:grid; place-items:center}
+  .statusrow{display:flex; align-items:center; gap:8px; margin-top:10px}
+  .status{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:4px 9px; border-radius:8px; background:var(--accent-soft); color:var(--ink-soft)}
+  .status i{width:7px;height:7px;border-radius:50%; background:#9aa4bb}
+  .status.live i{background:#16a34a} .status.live{color:#1c9d4e}
+  .status.loading i{background:#f0a132; animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .rbtn{margin-left:auto; border:1px solid var(--line); background:var(--card); color:var(--ink-soft); font-size:12px; font-weight:600; padding:5px 11px; border-radius:8px; cursor:pointer}
+
+  /* theme switch */
+  .themesw{position:relative; flex:0 0 auto; width:48px; height:27px; margin-left:auto}
+  .themesw input{position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; z-index:2}
+  .themesw .tk{position:absolute; inset:0; background:#cdd5e3; border-radius:99px; transition:.2s}
+  .themesw .tk::before{content:'☀'; font-size:11px; display:grid; place-items:center; position:absolute; width:21px; height:21px; left:3px; top:3px; background:#fff; color:#f0a132; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .themesw input:checked + .tk{background:var(--accent)}
+  .themesw input:checked + .tk::before{content:'🌙'; color:#31406b; transform:translateX(21px)}
+
+  .scroll{flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; padding:14px 14px 24px}
+  .screen.hasbar .scroll{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+
+  /* HOME: floor sections + department buttons */
+  .fsec{margin-bottom:16px}
+  .fsec-h{display:flex; align-items:center; gap:8px; padding:0 4px 8px; flex-wrap:wrap}
+  .fbadge{font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; color:#fff; background:var(--accent); padding:3px 8px; border-radius:6px}
+  .fname{font-size:15px; font-weight:700}
+  .froute{font-size:10.5px; color:var(--ink-soft); width:100%; padding-left:2px}
+  .froute b{color:var(--accent)}
+  .drow{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; text-align:left; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:7px; cursor:pointer; font-family:inherit; color:var(--ink); box-shadow:var(--shadow)}
+  .drow:active{border-color:var(--accent); background:var(--accent-soft)}
+  .drow .dn{font-size:13.5px; font-weight:600}
+  .drow.all{background:var(--accent-soft); border-color:transparent}
+  .drow.all .dn{color:var(--accent)}
+  .drow .chev{color:var(--ink-soft); font-size:19px; flex:0 0 auto}
+
+  /* DETAIL: task list */
+  .sectlabel{font-size:11px; font-weight:700; letter-spacing:.04em; color:var(--ink-soft); text-transform:uppercase; margin:2px 2px 10px}
+  .note{font-size:11.5px; color:#8a5a00; background:#fff6e6; border:1px solid #f2dca8; border-radius:10px; padding:9px 12px; margin-bottom:13px; line-height:1.45}
+  body.dark .note{color:#f0c26b; background:#2a2413; border-color:#4a3d1c}
+  .task{display:grid; grid-template-columns:16px 1fr; gap:12px; align-items:start; background:var(--card); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:9px; box-shadow:var(--shadow)}
+  .tdot{width:15px; height:15px; border-radius:50%; margin-top:3px; box-shadow:0 0 0 3px var(--card)}
+  .tname{font-size:14px; font-weight:600; line-height:1.25; color:var(--ink)}
+  .ten{font-size:10.5px; color:var(--ink-soft); margin-top:1px}
+  .twhen{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--accent); margin-top:3px}
+  .twhen.tbd{color:#9aa4bb}
+  .ttime{font-size:11px; color:var(--ink-soft); margin-top:1px}
+
+  /* CALENDAR */
+  .cal{background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:13px 12px 16px; margin-bottom:13px}
+  .cal h3{margin:0 0 2px; font-size:15px; font-weight:700; text-align:center}
+  .cal h3 span{display:block; font-size:11.5px; font-weight:500; color:var(--ink-soft); margin-top:1px}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px 3px; margin-top:9px}
+  .dow{font-size:10.5px; font-weight:600; color:var(--ink-soft); text-align:center; padding-bottom:2px}
+  .day{aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; position:relative; font-size:13px; color:var(--ink)}
+  .day .num{position:relative; z-index:2}
+  .day.pad{visibility:hidden}
+  .day.inmonth::after{content:''; position:absolute; inset:9%; border-radius:50%; background:var(--fill,var(--cal-empty)); z-index:1}
+  .day.inmonth.act .num{color:#232a3b}
+  .day.inmonth.act.ln .num{color:#fff}
+  .day.act{cursor:pointer}
+  .day.act:active::after{filter:brightness(.9)}
+  .dots{position:absolute; bottom:10%; left:0; right:0; display:flex; gap:2px; justify-content:center; z-index:2}
+  .dots i{width:4px; height:4px; border-radius:50%}
+  .calempty{background:var(--card); border:1px dashed var(--line); border-radius:16px; padding:30px 18px; text-align:center; color:var(--ink-soft); font-size:13px; line-height:1.6}
+
+  /* bottom tab bar */
+  .tabbar{position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:100%; max-width:520px; background:var(--tab); border-top:1px solid var(--line); display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom)); z-index:20; box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+  .tabbar[hidden]{display:none}
+  .tab{flex:1; border:0; background:none; font-family:inherit; color:var(--tabink); display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; cursor:pointer; border-radius:12px; font-size:10.5px; font-weight:600}
+  .tab svg{width:22px; height:22px}
+  .tab.on{color:var(--accent)}
+  .tab:active{background:var(--accent-soft)}
+
+  /* loading overlay */
+  .loader{position:fixed; inset:0; z-index:90; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; background:var(--paper); transition:opacity .32s ease}
+  .loader.hide{opacity:0; pointer-events:none}
+  .spin{width:46px; height:46px; position:relative}
+  .spin i{position:absolute; top:0; left:calc(50% - 2.5px); width:5px; height:14px; border-radius:3px; background:var(--accent); opacity:.15; transform-origin:2.5px 23px; animation:spinfade 1.05s linear infinite}
+  @keyframes spinfade{0%{opacity:1} 100%{opacity:.15}}
+  .spin i:nth-child(1){transform:rotate(0deg); animation-delay:-.9625s}
+  .spin i:nth-child(2){transform:rotate(30deg); animation-delay:-.875s}
+  .spin i:nth-child(3){transform:rotate(60deg); animation-delay:-.7875s}
+  .spin i:nth-child(4){transform:rotate(90deg); animation-delay:-.7s}
+  .spin i:nth-child(5){transform:rotate(120deg); animation-delay:-.6125s}
+  .spin i:nth-child(6){transform:rotate(150deg); animation-delay:-.525s}
+  .spin i:nth-child(7){transform:rotate(180deg); animation-delay:-.4375s}
+  .spin i:nth-child(8){transform:rotate(210deg); animation-delay:-.35s}
+  .spin i:nth-child(9){transform:rotate(240deg); animation-delay:-.2625s}
+  .spin i:nth-child(10){transform:rotate(270deg); animation-delay:-.175s}
+  .spin i:nth-child(11){transform:rotate(300deg); animation-delay:-.0875s}
+  .spin i:nth-child(12){transform:rotate(330deg); animation-delay:0s}
+  .loadtxt{font-size:14px; font-weight:600; color:var(--ink)}
+  .loadsub{font-size:11.5px; color:var(--ink-soft); margin-top:-8px}
+
+  /* day popup — centered modal */
+  .sheetwrap{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:22px}
+  .sheetwrap[hidden]{display:none}
+  .sheet-backdrop{position:absolute; inset:0; background:rgba(10,16,30,.55); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); animation:fade .18s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{position:relative; width:100%; max-width:380px; max-height:78vh; overflow:auto; background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 26px 64px rgba(8,14,30,.42); animation:pop .22s cubic-bezier(.2,.85,.3,1)}
+  @keyframes pop{from{opacity:0; transform:scale(.92) translateY(8px)} to{opacity:1; transform:scale(1) translateY(0)}}
+  .sheet-head{position:relative; padding:18px 48px 13px 18px; border-bottom:1px solid var(--line)}
+  .sheet-date{font-size:19px; font-weight:700; line-height:1.15}
+  .sheet-sub{font-size:12px; color:var(--ink-soft); margin-top:3px}
+  .sheet-close{position:absolute; top:14px; right:14px; border:0; background:var(--accent-soft); width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; color:var(--ink-soft); display:grid; place-items:center}
+  .sheet-close:active{transform:scale(.92)}
+  #sheetBody{padding:4px 18px 18px}
+  .sitem{display:grid; grid-template-columns:16px 1fr; gap:12px; align-items:start; padding:12px 0; border-bottom:1px solid var(--line)}
+  .sitem:last-child{border-bottom:0}
+  .sdot{width:15px; height:15px; border-radius:50%; margin-top:3px; box-shadow:0 0 0 3px var(--card)}
+  .sname{font-size:14px; font-weight:600; line-height:1.25}
+  .sen{font-size:11px; color:var(--ink-soft); margin-top:1px}
+  .swhen{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--accent); margin-top:3px}
+  .stime{font-size:11.5px; color:var(--ink-soft); margin-top:1px}
+  .sempty{font-size:12.5px; color:var(--ink-soft); padding:14px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===== HOME: department buttons only ===== -->
+  <section class="screen on" id="screenHome">
+    <div class="mhead">
+      <div class="hrow">
+        <div style="min-width:0"><div class="mtitle">เลือกฝ่ายงาน</div><div class="msub">Office Relocation Plan · NTL</div></div>
+        <label class="themesw"><input type="checkbox" class="themechk"><span class="tk"></span></label>
+      </div>
+      <div class="statusrow"><span class="status" id="status"><i></i><span>…</span></span>
+        <button class="rbtn" id="refreshBtn">↻ รีเฟรช</button></div>
+    </div>
+    <div class="scroll" id="homeScroll"></div>
+  </section>
+
+  <!-- ===== DETAIL: work list ===== -->
+  <section class="screen hasbar" id="screenDetail">
+    <div class="mhead">
+      <div class="hrow">
+        <button class="backbtn" data-nav="home">‹</button>
+        <div style="min-width:0"><div class="mtitle" id="dName"></div><div class="msub" id="dSub"></div></div>
+        <label class="themesw"><input type="checkbox" class="themechk"><span class="tk"></span></label>
+      </div>
+    </div>
+    <div class="scroll" id="detailScroll"></div>
+  </section>
+
+  <!-- ===== CALENDAR ===== -->
+  <section class="screen hasbar" id="screenCal">
+    <div class="mhead">
+      <div class="hrow">
+        <button class="backbtn" data-nav="detail">‹</button>
+        <div style="min-width:0"><div class="mtitle">ปฏิทิน</div><div class="msub" id="cSub"></div></div>
+        <label class="themesw"><input type="checkbox" class="themechk"><span class="tk"></span></label>
+      </div>
+    </div>
+    <div class="scroll" id="calScroll"></div>
+  </section>
+</div>
+
+<nav class="tabbar" id="tabbar" hidden>
+  <button class="tab" data-nav="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+    <span>ฝ่ายงาน</span>
+  </button>
+  <button class="tab" data-nav="detail">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.2"/><circle cx="3.5" cy="12" r="1.2"/><circle cx="3.5" cy="18" r="1.2"/></svg>
+    <span>รายการ</span>
+  </button>
+  <button class="tab" data-nav="cal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>ปฏิทิน</span>
+  </button>
+</nav>
+
+<div class="sheetwrap" id="dayPopup" hidden>
+  <div class="sheet-backdrop" data-close></div>
+  <div class="sheet">
+    <div class="sheet-head"><div><div class="sheet-date" id="sheetDate"></div><div class="sheet-sub" id="sheetSub"></div></div>
+      <button class="sheet-close" data-close aria-label="ปิด">✕</button></div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="loader" id="loader">
+  <div class="spin" aria-label="กำลังโหลด"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="loadtxt">กำลังโหลดแผนงาน…</div>
+  <div class="loadsub">Office Relocation Plan · NTL</div>
+</div>
+
+<script>
+const DATA_URL = "https://script.google.com/macros/s/AKfycbyZJPqGt72BtIhpBtZqpceoBHdy3zAikXVXKBVWzff4wXNBu2StUlAKNJpqJQW0MlE/exec";
+const R1='Ari Hills → BTS', R2='KSL → Ari Hills', R3='Ari Hills → Ari Hills', R4='Training → Ari Hills';
+const FALLBACK={
+  activities:[
+    {key:'meet',th:'นัดประชุมฝ่าย',en:'Department Meeting',color:'#0d9488'},
+    {key:'furni',th:'ตรวจนับเฟอร์นิเจอร์ + ติดบาร์โค้ด',en:'Furniture Count + Barcode',color:'#8faedc'},
+    {key:'box',th:'รับกล่องพัสดุ',en:'Receive Boxes',color:'#1b1b8f'},
+    {key:'pack',th:'พนักงาน Pack',en:'Staff Packing',color:'#f5c518'},
+    {key:'final',th:'พนักงาน Final Check',en:'Final Check',color:'#2bb3f0'},
+    {key:'count',th:'ตรวจนับกล่องเอกสาร + คอมพิวเตอร์',en:'Count Boxes + Computers',color:'#ee6fb0'},
+    {key:'report',th:'ส่ง Report ยืนยันรายการ',en:'Confirm Report',color:'#8a5cd1'},
+    {key:'move',th:'ขนย้ายออก',en:'Move Out',color:'#c62b1f'},
+    {key:'test',th:'Test / ติดตั้งระบบ',en:'Test / System Setup',color:'#f07c2c'},
+    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#16a34a'},
+    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#8e8e8e'},
+  ],
+  groups:[
+    {phase:1,route:R1,week:'WEEK 1',floor:'BTS ชั้น 22',hc:229,depts:['IT Infra (50)','IT PS (59)','IT AI (11)','IT MIS (59)','IT SEC (50)'],
+     steps:[['furni','10–11 ส.ค.','09.30–12.00 น.',['8-10','8-11']],['box','24 ส.ค.','ส่งกล่อง 458 ใบ',['8-24']],['pack','27–28 ส.ค.','User แพ็คเอกสาร',['8-27','8-28']],['final','31 ส.ค.–1 ก.ย.','09.30–12.00 น.',['8-31','9-1']],['count','31 ส.ค.–1 ก.ย.','ตรวจนับ BOX+Computer',['8-31','9-1']],['report','2–3 ก.ย.','',['9-2','9-3']],['move','ศ. 4 ก.ย.','17.00 น.+',['9-4']],['test','5–6 ก.ย.','ติดตั้ง+ส่งมอบคอมพ์',['9-5']],['work','7 ก.ย.','เริ่มใช้งาน',['9-7']],['ret','28 ก.ย.','',['9-28']]]},
+    {phase:1,route:R1,week:'WEEK 2',floor:'BTS ชั้น 21',hc:268,depts:['IT DEV (155)','IT ES (113)'],
+     steps:[['furni','10–11 ส.ค.','',['8-10','8-11','8-15','8-16']],['box','24 ส.ค.','ส่งกล่อง 500 ใบ',['8-24']],['pack','2–3 ก.ย.','',['9-2','9-3']],['final','4 ก.ย.','',['9-4']],['count','7–8 ก.ย.','',['9-7','9-8']],['report','9–10 ก.ย.','',['9-9','9-10']],['move','11 ก.ย.','',['9-11']],['test','12 ก.ย.','',['9-12']],['work','13 ก.ย.','',['9-13']],['ret','28 ก.ย.','',['9-28']]]},
+    {phase:1,route:R1,week:'WEEK 3',floor:'BTS ชั้น 23',hc:172,depts:['A&D (18)','OPS COE & GNR (21)','Digital (110)','Insurance–Areegator/Tech','EXCOM ROOM-IT'],
+     steps:[['furni','14 · 17–18 ส.ค.','',['8-14','8-17','8-18']],['box','31 ส.ค.','ส่งกล่อง 600 ใบ',['8-31']],['pack','7–8 ก.ย.','',['9-7','9-8']],['final','9 ก.ย.','',['9-9']],['count','10–11 · 14–15 ก.ย.','',['9-10','9-11','9-14','9-15']],['report','16–17 ก.ย.','',['9-16','9-17']],['move','18 ก.ย.','17.30 น.+',['9-18']],['test','20 ก.ย.','',['9-20']],['work','21 ก.ย.','',['9-21']],['ret','5 ต.ค.','',['10-5']]]},
+    {phase:1,route:R1,week:'WEEK 4',floor:'BTS ชั้น 24',hc:132,depts:['Insurance ชั้น 16 (132)'],
+     steps:[['furni','19–20 ส.ค.','',['8-19','8-20']],['box','11 ก.ย.','ส่งกล่อง 264 ใบ',['9-11']],['pack','16–17 ก.ย.','',['9-16','9-17']],['final','18 ก.ย.','',['9-18']],['count','21–22 ก.ย.','',['9-21','9-22']],['report','23–24 ก.ย.','',['9-23','9-24']],['move','25 ก.ย.','',['9-25']],['test','26 ก.ย.','',['9-26']],['work','27 ก.ย.','',['9-27']],['ret','12 ต.ค.','',['10-12']]]},
+    {phase:2,route:R1,week:'WEEK 5',floor:'BTS ชั้น 26',hc:217,depts:['LEGAL (83)','Finance & Accounting (38)','ACADEMY (67)','HP/HR (2)','FRAUD (14)','CORPORATE SUSTAINABILITY (13)'],
+     steps:[['furni','1 ก.ย.','',['9-1']],['box','2 ต.ค.','ส่งกล่อง 434 ใบ',['10-2']],['pack','8–9 ต.ค.','',['10-8','10-9']],['final','12 ต.ค.','',['10-12']],['count','13–14 ต.ค.','',['10-13','10-14']],['report','15 ต.ค.','',['10-15']],['move','16 ต.ค.','',['10-16']],['test','17–18 ต.ค.','',['10-17']],['work','19 ต.ค.','',['10-19']],['ret','2 พ.ย.','',['11-2']]]},
+    {phase:2,route:R1,week:'WEEK 6',floor:'BTS ชั้น 27',hc:205,depts:['OPS RISK','SURPRISE CHECK (FIELD)','CREDIT (110)','RISK','COMPLIANCE (13)','IA (13)'],
+     steps:[['furni','7–8 ก.ย.','',['9-7','9-8']],['box','9 ต.ค.','ส่งกล่อง 410 ใบ',['10-9']],['pack','15–16 ต.ค.','',['10-15','10-16']],['final','19 ต.ค.','',['10-19']],['count','20–21 ต.ค.','',['10-20','10-21']],['report','22 ต.ค.','',['10-22']],['move','23 ต.ค.','',['10-23']],['test','24–25 ต.ค.','',['10-24']],['work','26 ต.ค.','',['10-26']],['ret','9 พ.ย.','',['11-9']]]},
+    {phase:2,route:R1,week:'WEEK 7',floor:'BTS ชั้น 28',hc:291,depts:['LOAN COLLECTION (BDSM) (189)','MARKETING (102)'],
+     steps:[['furni','14 ก.ย.','',['9-14']],['box','16 ต.ค.','ส่งกล่อง 408 ใบ',['10-16']],['pack','22–23 ต.ค.','',['10-22','10-23']],['final','26 ต.ค.','',['10-26']],['count','27–28 ต.ค.','',['10-27','10-28']],['report','29 ต.ค.','',['10-29']],['move','30 ต.ค.','',['10-30']],['test','31 ต.ค.–1 พ.ย.','',['10-31']],['work','2 พ.ย.','',['11-2']],['ret','16 พ.ย.','',['11-16']]]},
+    {phase:2,route:R1,week:'WEEK 8',floor:'BTS ชั้น 29',hc:209,depts:['LOAN SALES (CLD) (~201)','MD OFFICE (8)'],
+     steps:[['test','2–8 พ.ย.','IT Setup / ทดสอบระบบ',['11-5']],['move','6 พ.ย.','Move Out',['11-6']],['work','9 พ.ย.','Move in',['11-9']]]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 9',hc:265,depts:['TLS-Loan (Sales) TM1-5 (265)'],steps:[]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 10',hc:18,depts:['Telesale Loan (Non-Sales) (18)'],steps:[]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 11',hc:165,depts:['OPS-CS (165)'],steps:[]},
+    {phase:3,route:R1,week:'เฟส 3.1',floor:'BTS ชั้น 25',hc:null,depts:['Training & Academy'],
+     steps:[['test','16–22 พ.ย.','IT Setup / ทดสอบระบบ',['11-18']],['move','20 พ.ย.','Move Out',['11-20']],['work','23 พ.ย.','Move in',['11-23']]]},
+    {phase:3,route:R2,week:'เฟส 3.2',floor:'Ari Hills ชั้น 14',hc:123,depts:['Telesales Insurance (Non-Sales) QA (NEW) (18)','Telesales Insurance (Sales) New Auto (105)'],steps:[]},
+    {phase:3,route:R2,week:'เฟส 3.2',floor:'Ari Hills ชั้น 15',hc:318,depts:['Telesales Insurance (Sales) PA (72)','Telesales Insurance (Sales) Renew (206)','Telesales Insurance (Non-Sales) (40)'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 10',hc:20,depts:['CLD Phone (Inbound) (20)'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 11',hc:null,depts:['OPS REG','OPS Insurance'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 12',hc:null,depts:['OPS BSCS Mailservice','OPS BSCS'],steps:[]},
+    {phase:3,route:R4,week:'เฟส 3.4',floor:'Ari Hills ชั้น 12A',hc:null,depts:['Training ESV'],steps:[]},
+  ]
+};
+
+let ACT={},HEX={},MID={},WHITENUM=new Set(),STD_STEPS=[],GROUPS=[];
+const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
+const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
+const MONTHS=[8,9,10,11],YEAR=2026,DOW=['S','M','T','W','T','F','S'];
+const TH_WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+let curGroup=-1, curDept=-1;
+const $=id=>document.getElementById(id);
+const statusEl=$('status');
+
+function lighten(h,f){const n=parseInt(h.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+function isDark(h){const n=parseInt(h.slice(1),16);return(0.299*(n>>16)+0.587*((n>>8)&255)+0.114*(n&255))<150;}
+function applyData(d){
+  ACT={};HEX={};MID={};WHITENUM=new Set();STD_STEPS=[];
+  (d.activities||[]).forEach(a=>{ACT[a.key]={name:a.th,en:a.en||''};HEX[a.key]=a.color;MID[a.key]=lighten(a.color,.3);if(isDark(MID[a.key]))WHITENUM.add(a.key);STD_STEPS.push(a.key);});
+  GROUPS=d.groups||[];
+  renderHome();
+  hideLoader();
+}
+function hideLoader(){const l=$('loader'); if(l&&!l.classList.contains('hide')){l.classList.add('hide'); setTimeout(()=>l.remove(),380);}}
+function stepsFloor(g){const m={};(g.steps||[]).forEach(s=>m[s[0]]=s);return STD_STEPS.map(k=>m[k]||[k,'รอกำหนดการ','',[]]);}
+function stepsDept(g,d){const src=(g.deptSteps&&g.deptSteps[d])?g.deptSteps[d]:(g.steps||[]);const m={};src.forEach(s=>m[s[0]]=s);return STD_STEPS.map(k=>m[k]||[k,'รอกำหนดการ','',[]]);}
+function effSteps(g){return curDept<0?stepsFloor(g):stepsDept(g,g.depts[curDept]);}
+function markMap(g){const m={};effSteps(g).forEach(([k,,,cal])=>(cal||[]).forEach(x=>{(m[x]=m[x]||[]).push(k);}));return m;}
+
+/* ===== HOME ===== */
+function renderHome(){
+  $('homeScroll').innerHTML=GROUPS.map((g,gi)=>{
+    const hc=g.hc?` · ${g.hc} คน`:'';
+    const rows=`<button class="drow all" data-g="${gi}" data-d="-1"><span class="dn">ทั้งชั้น (รวมทุกฝ่าย)</span><span class="chev">›</span></button>`+
+      g.depts.map((d,di)=>`<button class="drow" data-g="${gi}" data-d="${di}"><span class="dn">${d}</span><span class="chev">›</span></button>`).join('');
+    return `<div class="fsec"><div class="fsec-h"><span class="fbadge">${g.week}</span><span class="fname">${g.floor}</span>
+      <span class="froute">เส้นทาง: <b>${g.route}</b>${hc}</span></div>${rows}</div>`;
+  }).join('')||'<div class="sempty" style="padding:20px">ไม่มีข้อมูล</div>';
+}
+$('homeScroll').addEventListener('click',e=>{const b=e.target.closest('.drow');if(!b)return;curGroup=+b.dataset.g;curDept=+b.dataset.d;renderDetail();go('detail');});
+
+/* ===== DETAIL (list) ===== */
+function scopeName(g){return curDept<0?'ทั้งชั้น (รวม)':g.depts[curDept];}
+function renderDetail(){
+  const g=GROUPS[curGroup];
+  $('dName').textContent=scopeName(g);
+  $('dSub').textContent=g.floor+' · '+g.route;
+  const steps=effSteps(g);
+  const dated=steps.some(s=>s[3]&&s[3].length);
+  const note=dated?'':`<div class="note">* ฝ่าย/ชั้นนี้ยังไม่มีกำหนดการรายวัน — กรอกวัน/เวลาใน Google Sheet แล้วจะขึ้นให้อัตโนมัติ</div>`;
+  const tasks=steps.map(([k,when,time])=>{
+    const tbd=when==='รอกำหนดการ'?' tbd':''; const a=ACT[k]||{name:k,en:''};
+    return `<div class="task"><span class="tdot" style="background:${HEX[k]||'#999'}"></span>
+      <div><div class="tname">${a.name}</div><div class="ten">${a.en}</div><div class="twhen${tbd}">${when}</div>${time?`<div class="ttime">${time}</div>`:''}</div></div>`;
+  }).join('');
+  $('detailScroll').innerHTML=`${note}<div class="sectlabel">รายละเอียดงานที่ต้องทำ</div>${tasks}`;
+}
+
+/* ===== CALENDAR (only months with work) ===== */
+function renderCal(){
+  const g=GROUPS[curGroup];
+  $('cSub').textContent=scopeName(g)+' · '+g.floor;
+  const mk=markMap(g);
+  const present=MONTHS.filter(m=>Object.keys(mk).some(key=>+key.split('-')[0]===m));
+  if(!present.length){ $('calScroll').innerHTML=`<div class="calempty">ฝ่าย/ชั้นนี้ยังไม่มีวันงานในปฏิทิน<br>เมื่อกรอกวันใน Google Sheet แล้วจะแสดงเฉพาะเดือนที่มีงาน</div>`; return; }
+  $('calScroll').innerHTML=present.map(m=>monthGrid(m,mk)).join('');
+}
+function monthGrid(month,marks){
+  const first=new Date(YEAR,month-1,1); const lead=first.getDay(); const days=new Date(YEAR,month,0).getDate();
+  let cells='',col=0; const push=h=>{cells+=h;col=(col+1)%7;};
+  for(let i=0;i<lead;i++) push(`<div class="day pad" data-col="${col}"></div>`);
+  for(let d=1;d<=days;d++){
+    const acts=marks[month+'-'+d];
+    if(!acts){push(`<div class="day inmonth" data-col="${col}"><span class="num">${d}</span></div>`);continue;}
+    const dk=` data-keys="${acts.join(',')}"`, fill=MID[acts[0]]||'#ccc';
+    let dots=''; if(acts.length>1) dots=`<span class="dots">${acts.slice(1,4).map(k=>`<i style="background:${HEX[k]}"></i>`).join('')}</span>`;
+    push(`<div class="day inmonth act${WHITENUM.has(acts[0])?' ln':''}" data-col="${col}" data-date="${month}-${d}"${dk} style="--fill:${fill}"><span class="num">${d}</span>${dots}</div>`);
+  }
+  return `<div class="cal"><h3>${EN_MONTH[month]} ${YEAR}<span>${TH_MONTH[month]}</span></h3>
+    <div class="cal-grid">${DOW.map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div>`;
+}
+$('calScroll').addEventListener('click',e=>{const d=e.target.closest('.day.act');if(d)openDayPopup(d);});
+
+/* ===== day popup ===== */
+const popup=$('dayPopup');
+function openDayPopup(dayEl){
+  const g=GROUPS[curGroup]; const keys=(dayEl.dataset.keys||'').split(',').filter(Boolean);
+  const p=(dayEl.dataset.date||'').split('-'); const m=+p[0],dd=+p[1];
+  const wd=TH_WD[new Date(YEAR,m-1,dd).getDay()];
+  const sm={}; effSteps(g).forEach(s=>sm[s[0]]=s);
+  const rows=keys.map(k=>{const st=sm[k]||[k,'',''];const a=ACT[k]||{name:k,en:''};
+    const w=(st[1]&&st[1]!=='รอกำหนดการ')?`<div class="swhen">${st[1]}</div>`:'';
+    const t=st[2]?`<div class="stime">${st[2]}</div>`:'';
+    return `<div class="sitem"><span class="sdot" style="background:${HEX[k]||'#999'}"></span><div><div class="sname">${a.name}</div><div class="sen">${a.en}</div>${w}${t}</div></div>`;}).join('');
+  $('sheetDate').textContent=`${dd} ${TH_MONTH[m]||''} ${YEAR}`;
+  $('sheetSub').textContent=`วัน${wd} · ${scopeName(g)}`;
+  $('sheetBody').innerHTML=rows||`<div class="sempty">ไม่มีรายการในวันนี้</div>`;
+  popup.hidden=false;
+}
+popup.addEventListener('click',e=>{if(e.target.closest('[data-close]'))popup.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')popup.hidden=true;});
+
+/* ===== navigation ===== */
+function go(name){
+  ['home','detail','cal'].forEach(n=>$('screen'+n[0].toUpperCase()+n.slice(1)).classList.toggle('on',n===name));
+  const tb=$('tabbar');
+  tb.hidden=(name==='home');
+  tb.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.nav===name));
+  const sc={home:'homeScroll',detail:'detailScroll',cal:'calScroll'}[name];
+  if($(sc)) $(sc).scrollTop=0;
+}
+document.body.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]'); if(!nav)return;
+  const t=nav.dataset.nav;
+  if(t==='home') go('home');
+  else if(t==='detail'){ if(curGroup<0) return go('home'); renderDetail(); go('detail'); }
+  else if(t==='cal'){ if(curGroup<0) return go('home'); renderCal(); go('cal'); }
+});
+
+/* ===== theme switch ===== */
+function setTheme(dark){
+  document.body.classList.toggle('dark',dark);
+  document.querySelectorAll('.themechk').forEach(c=>c.checked=dark);
+  document.querySelector('meta[name=theme-color]').setAttribute('content',dark?'#0e131e':'#1b2e6b');
+  try{localStorage.setItem('orp_theme',dark?'d':'l');}catch(e){}
+}
+document.querySelectorAll('.themechk').forEach(c=>c.addEventListener('change',()=>setTheme(c.checked)));
+(function(){let d=false;try{const s=localStorage.getItem('orp_theme');d=s?s==='d':window.matchMedia('(prefers-color-scheme: dark)').matches;}catch(e){}setTheme(d);})();
+
+/* ===== data loading (JSONP) ===== */
+function setStatus(s,t){statusEl.className='status '+s;statusEl.querySelector('span').textContent=t;}
+function normalize(d){if(!d||!d.groups||!d.groups.length)throw new Error('empty');if(!d.activities||!d.activities.length)d.activities=FALLBACK.activities;return d;}
+let _cb=0;
+function loadData(){
+  if(!DATA_URL){applyData(FALLBACK);setStatus('','Offline');return;}
+  setStatus('loading','กำลังเชื่อมต่อ…');
+  const cb='__mw_'+(++_cb);
+  const timer=setTimeout(()=>{cleanup();applyData(FALLBACK);setStatus('','Offline');},12000);
+  function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;}if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+  window[cb]=data=>{cleanup();try{applyData(normalize(data));setStatus('live','Online');}catch(e){applyData(FALLBACK);setStatus('','Offline');}};
+  const s=document.createElement('script');
+  s.src=DATA_URL+(DATA_URL.includes('?')?'&':'?')+'callback='+cb+'&t='+Date.now();
+  s.onerror=()=>{cleanup();applyData(FALLBACK);setStatus('','Offline');};
+  document.head.appendChild(s);
+}
+$('refreshBtn').onclick=loadData;
+loadData();
+</script>
+</body>
+</html>
