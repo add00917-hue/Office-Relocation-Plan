@@ -225,7 +225,7 @@
     </div>
   </header>
 
-  <div class="viewsw">
+  <div class="viewsw" hidden style="display:none">
     <button class="vbtn active" data-view="plan">📅 แผนงาน</button>
     <button class="vbtn" data-view="data">📦 ข้อมูล / คู่มือ</button>
   </div>
@@ -707,6 +707,7 @@ loadData();</script>
   .tabbar[hidden]{display:none}
   .tab{flex:1; border:0; background:none; font-family:inherit; color:var(--tabink); display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; cursor:pointer; border-radius:12px; font-size:10.5px; font-weight:600}
   .tab svg{width:22px; height:22px}
+  .tab[data-nav="data"]{display:none} /* ปิดแท็บข้อมูลไว้ก่อน */
   .tab.on{color:var(--accent)}
   .tab:active{background:var(--accent-soft)}
 
@@ -963,8 +964,9 @@ function effSteps(g){return curDept<0?stepsFloor(g):stepsDept(g,g.depts[curDept]
 function markMap(g){const m={};effSteps(g).forEach(([k,,,cal])=>(cal||[]).forEach(x=>{(m[x]=m[x]||[]).push(k);}));return m;}
 
 /* ===== HOME ===== */
+const SHOW_GUIDE=false; // ปิดหน้า "ข้อมูล/คู่มือ" ไว้ก่อน (อยู่ระหว่างปรับปรุง) — เปิดใช้เปลี่ยนเป็น true
 function renderHome(){
-  const banner=`<button class="databanner" data-nav="data"><span class="dbi">📦</span><span class="dbt"><b>ข้อมูล / คู่มือ</b><small>ขั้นตอนแพ็คกล่อง · ข้อมูลกล่อง · การขนย้าย</small></span><span class="chev">›</span></button>`;
+  const banner=SHOW_GUIDE?`<button class="databanner" data-nav="data"><span class="dbi">📦</span><span class="dbt"><b>ข้อมูล / คู่มือ</b><small>ขั้นตอนแพ็คกล่อง · ข้อมูลกล่อง · การขนย้าย</small></span><span class="chev">›</span></button>`:'';
   $('homeScroll').innerHTML=banner+GROUPS.map((g,gi)=>{
     const hc=g.hc?` · ${g.hc} คน`:'';
     const rows=`<button class="drow all" data-g="${gi}" data-d="-1"><span class="dn">ทั้งชั้น (รวมทุกฝ่าย)</span><span class="chev">›</span></button>`+
