@@ -2,14 +2,571 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1b2e6b">
-<title>Office Relocation Plan · Mobile</title>
+<title>Office Relocation Plan · NTL</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
+  html,body{margin:0}
+  #root{min-height:100dvh}
+  .loader{position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; background:var(--paper,#f4f6fb); transition:opacity .32s ease; font-family:"IBM Plex Sans Thai",system-ui,sans-serif}
+  .loader.hide{opacity:0; pointer-events:none}
+  .spin{width:46px; height:46px; position:relative}
+  .spin i{position:absolute; top:0; left:calc(50% - 2.5px); width:5px; height:14px; border-radius:3px; background:var(--accent,var(--brand,#1b2e6b)); opacity:.15; transform-origin:2.5px 23px; animation:spinfade 1.05s linear infinite}
+  @keyframes spinfade{0%{opacity:1} 100%{opacity:.15}}
+  .spin i:nth-child(1){transform:rotate(0deg); animation-delay:-0.9625s}
+  .spin i:nth-child(2){transform:rotate(30deg); animation-delay:-0.8750s}
+  .spin i:nth-child(3){transform:rotate(60deg); animation-delay:-0.7875s}
+  .spin i:nth-child(4){transform:rotate(90deg); animation-delay:-0.7000s}
+  .spin i:nth-child(5){transform:rotate(120deg); animation-delay:-0.6125s}
+  .spin i:nth-child(6){transform:rotate(150deg); animation-delay:-0.5250s}
+  .spin i:nth-child(7){transform:rotate(180deg); animation-delay:-0.4375s}
+  .spin i:nth-child(8){transform:rotate(210deg); animation-delay:-0.3500s}
+  .spin i:nth-child(9){transform:rotate(240deg); animation-delay:-0.2625s}
+  .spin i:nth-child(10){transform:rotate(270deg); animation-delay:-0.1750s}
+  .spin i:nth-child(11){transform:rotate(300deg); animation-delay:-0.0875s}
+  .spin i:nth-child(12){transform:rotate(330deg); animation-delay:-0.0000s}
+  .loadtxt{font-size:14px; font-weight:600; color:var(--ink,#1b2431)}
+  .loadsub{font-size:11.5px; color:var(--ink-soft,#5b6678); margin-top:-8px}
+  @media (prefers-color-scheme:dark){ body:not(.forcelight) .loader{background:#0e131e} body:not(.forcelight) .loadtxt{color:#e8ebf3} body:not(.forcelight) .loadsub{color:#94a0b8} }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="loader" id="loader"><div class="spin" aria-label="loading"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="loadtxt">กำลังโหลดแผนงาน…</div><div class="loadsub">Office Relocation Plan · NTL</div></div>
+
+<script type="text/plain" id="css-desktop">:root{
+    --ink:#1c2431; --ink-soft:#54607a; --line:#e4e8f0; --paper:#f6f7fb; --card:#ffffff; --brand:#1b2e6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--paper); color:var(--ink); font-family:"IBM Plex Sans Thai",system-ui,sans-serif; line-height:1.4; -webkit-font-smoothing:antialiased}
+  .app{max-width:1680px; margin:0 auto; padding:12px clamp(12px,2vw,22px) 20px; display:flex; flex-direction:column; gap:11px}
+
+  .appbar{display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:11px 16px; box-shadow:0 1px 2px rgba(20,30,60,.04)}
+  .brand{display:flex; align-items:center; gap:12px; min-width:0}
+  .logo{width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:grid; place-items:center; background:linear-gradient(135deg,#2b47a8,#16234f); box-shadow:0 3px 10px rgba(27,46,107,.28)}
+  .logo svg{width:22px; height:22px}
+  .bname{font-size:19px; font-weight:700; letter-spacing:-.02em; line-height:1.05}
+  .btag{font-size:11.5px; color:var(--ink-soft); margin-top:1px}
+  .updated{margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .status{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; padding:5px 10px; border-radius:8px; background:#f1f3f9; color:var(--ink-soft)}
+  .status i{width:7px; height:7px; border-radius:50%; background:#9aa4bb}
+  .status.live i{background:#16a34a} .status.live{color:#116b34; background:#e7f6ec}
+  .status.loading i{background:#f0a132; animation:pulse 1s infinite}
+  .status.error i{background:#c62b1f} .status.error{color:#8f2018; background:#fbe9e7}
+  @keyframes pulse{50%{opacity:.35}}
+  .ghost{font-family:inherit; font-size:11.5px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--ink-soft); padding:5px 11px; border-radius:8px; cursor:pointer}
+  .ghost:hover{border-color:#c3ccdf; color:var(--ink)}
+  .route-pill{display:inline-flex; align-items:center; gap:7px; background:var(--brand); color:#fff; padding:6px 13px; border-radius:999px; font-size:12px; font-weight:600; white-space:nowrap}
+
+  .navbar{display:flex; flex-direction:column; gap:8px}
+  .seg{display:inline-flex; background:#eaeef6; border-radius:12px; padding:3px; gap:2px}
+  .seg button{font-family:inherit; border:0; background:none; padding:7px 15px; border-radius:9px; font-weight:700; font-size:12.5px; color:var(--ink-soft); cursor:pointer; transition:.15s; line-height:1.1; text-align:center}
+  .seg button small{display:block; font-weight:500; font-size:9.5px; opacity:.7; margin-top:1px}
+  .seg button.active{background:#fff; color:var(--brand); box-shadow:0 1px 3px rgba(20,30,60,.12)}
+
+  .groupnav{display:flex; flex-wrap:wrap; gap:7px 14px; align-items:center}
+  .rgroup{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+  .rlabel{font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600; color:#55607a; background:#eef1f8; padding:5px 8px; border-radius:7px; white-space:nowrap}
+  .groupnav button{font-family:inherit; font-size:12px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--ink-soft); padding:6px 12px; border-radius:9px; cursor:pointer; transition:.15s; white-space:nowrap}
+  .groupnav button:hover{border-color:#c3ccdf; color:var(--ink)}
+  .groupnav button.active{background:var(--brand); color:#fff; border-color:var(--brand)}
+
+  .explorer{display:grid; grid-template-columns:1fr 1fr; gap:18px; min-height:0}
+  .cals{display:grid; grid-template-columns:1fr 1fr; gap:14px; align-content:start}
+  .cal{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:13px 13px 15px}
+  .cal h3{margin:0 0 2px; font-size:14px; font-weight:700; text-align:center}
+  .cal h3 span{display:block; font-size:11px; font-weight:500; color:var(--ink-soft); margin-top:1px}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px 2px; margin-top:8px}
+  .dow{font-size:10.5px; font-weight:600; color:var(--ink-soft); text-align:center; padding-bottom:2px}
+  .day{aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; position:relative; font-size:12px; color:#2a2f3a}
+  .day .num{position:relative; z-index:2}
+  .day.pad{visibility:hidden}
+  .day.inmonth::after{content:''; position:absolute; inset:9%; border-radius:50%; background:var(--fill,#dde1e9); z-index:1}
+  .day.act{cursor:pointer}
+  .day.act:hover::after{filter:brightness(.96)}
+  .dots{position:absolute; bottom:12%; left:0; right:0; display:flex; gap:2px; justify-content:center; z-index:2}
+  .dots i{width:4px; height:4px; border-radius:50%}
+  .day.inmonth.muted::after{background:#e4e7ee}
+  .day.inmonth.muted .dots{display:none}
+  .day.sel .dots{display:none}
+  .day.sel .num{font-weight:700}
+  .day.sel.txtwhite .num{color:#fff}
+  .day.link-right::before{content:''; position:absolute; left:50%; width:calc(100% + 2px); height:52%; top:50%; transform:translateY(-50%); background:#d7dbe6; border-radius:99px; z-index:0}
+  .cal-empty{grid-column:1/-1; border:1px dashed #cfd7e6; border-radius:16px; padding:30px 18px; color:var(--ink-soft); font-size:13px; text-align:center; background:#fafbfe; line-height:1.6}
+
+  .panel-list{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:15px 15px 13px; display:flex; flex-direction:column; min-height:0}
+  .pl-head{border-bottom:1px solid var(--line); padding-bottom:11px; margin-bottom:10px}
+  .pl-top{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap}
+  .weekbadge{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:11px; color:#fff; background:var(--brand); padding:3px 8px; border-radius:6px}
+  .pl-floor{font-size:17px; font-weight:700}
+  .routetag{font-size:11px; color:var(--ink-soft); margin-top:4px}
+  .routetag b{color:var(--brand)}
+  .pl-meta{color:var(--ink-soft); font-size:12px; margin-top:2px}
+  .pl-meta .hc{color:var(--brand); font-weight:600}
+  .deptpills{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .dpill{font-family:inherit; font-size:11.5px; font-weight:600; border:1px solid var(--line); background:#f4f6fb; color:#39456a; padding:5px 12px; border-radius:999px; cursor:pointer; transition:.12s; white-space:nowrap}
+  .dpill:hover{border-color:#c3ccdf; color:var(--ink)}
+  .dpill.active{background:var(--brand); color:#fff; border-color:var(--brand)}
+  .scopenote{font-size:10.5px; color:#8a5a00; background:#fff6e6; border:1px solid #f2dca8; padding:5px 9px; border-radius:7px; margin:8px 0; line-height:1.4}
+  .items{display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin-top:11px}
+  .item{--ac:#999; display:grid; grid-template-columns:14px 1fr; gap:9px; align-items:start; width:100%; text-align:left; background:none; border:0; border-radius:9px; padding:7px 8px; cursor:pointer; font-family:inherit; transition:.12s}
+  .item:hover{background:#f4f6fb}
+  .idot{width:13px; height:13px; border-radius:50%; margin-top:3px; background:var(--ac); box-shadow:0 0 0 3px #fff}
+  .iname{font-size:12.5px; font-weight:600; line-height:1.2; color:var(--ink)}
+  .ien{font-size:9.5px; color:var(--ink-soft); display:block; line-height:1.1; margin-top:1px}
+  .iwhen{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600; color:var(--brand); display:block; margin-top:1px}
+  .iwhen.tbd{color:#9aa4bb}
+  .itime{font-size:10px; color:var(--ink-soft); display:block; margin-top:1px}
+  .item.sel{background:#eef2fb; box-shadow:inset 3px 0 0 var(--ac)}
+  .item.dim{opacity:.4}
+
+  /* supplies (after counting) */
+  .supsec{margin-top:12px; border-top:1px solid var(--line); padding-top:11px}
+  .suplabel{font-size:10.5px; font-weight:700; letter-spacing:.03em; color:var(--ink-soft); text-transform:uppercase; margin-bottom:8px}
+  .supbox{background:#f7f9fc; border:1px solid var(--line); border-radius:11px; padding:10px 12px; margin-bottom:8px}
+  .supdept{font-size:12px; font-weight:700; color:var(--brand); margin-bottom:5px}
+  .suphead{font-size:11px; color:var(--ink-soft); margin-bottom:7px}
+  .suphead b{color:var(--ink)}
+  .suprow{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; padding:3px 0; border-top:1px dashed #e2e7f0}
+  .suprow:first-of-type{border-top:0}
+  .suprow span{color:var(--ink)}
+  .suprow b{font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--brand)}
+
+  /* view switch + guide page */
+  .viewsw{display:inline-flex; background:#eaeef6; border-radius:12px; padding:3px; gap:2px; align-self:flex-start}
+  .vbtn{font-family:inherit; border:0; background:none; padding:7px 15px; border-radius:9px; font-weight:700; font-size:12.5px; color:var(--ink-soft); cursor:pointer}
+  .vbtn.active{background:#fff; color:var(--brand); box-shadow:0 1px 3px rgba(20,30,60,.12)}
+  .planview{display:flex; flex-direction:column; gap:11px; min-height:0}
+  .guideview{overflow:auto}
+  .gsec{margin-bottom:24px}
+  .gsec-h{font-size:16px; font-weight:700; margin:0 0 12px; display:flex; align-items:center; gap:9px}
+  .gsec-h::before{content:''; width:4px; height:17px; border-radius:2px; background:var(--brand)}
+  .ggrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px}
+  .gcard{background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(20,30,60,.05)}
+  .gmedia{aspect-ratio:16/10; background:#eef1f7; position:relative; display:grid; place-items:center; overflow:hidden}
+  .gmedia[data-img]{cursor:zoom-in}
+  .gmedia img{width:100%; height:100%; object-fit:cover}
+  .gembedwrap{aspect-ratio:16/9}
+  .gembed,.gvid{width:100%; height:100%; border:0; display:block; object-fit:cover; background:#000}
+  .gph{display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--ink-soft); font-size:12px; text-align:center; padding:16px}
+  .gph b{font-size:15px; font-weight:600; color:#8a93a8}
+  .gph span{font-size:10.5px}
+  .gpdf .gph b{color:#c0392b}
+  .gtag{position:absolute; top:8px; left:8px; z-index:1; font-size:10px; font-weight:600; background:rgba(15,20,35,.6); color:#fff; padding:3px 8px; border-radius:6px}
+  .gbody{padding:11px 13px 13px}
+  .gtitle{font-size:13.5px; font-weight:700; line-height:1.3}
+  .gdesc{font-size:11.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45}
+  .gbtn{display:inline-flex; align-items:center; gap:6px; margin-top:10px; font-size:12px; font-weight:600; color:var(--brand); background:#eef2fb; border:1px solid #dbe3f4; padding:7px 12px; border-radius:9px; text-decoration:none; cursor:pointer}
+  .gbtn.dis{color:#9aa4bb; background:#f2f4f8; border-color:var(--line); cursor:default}
+  .gempty{border:1px dashed #cfd7e6; border-radius:16px; padding:40px 18px; text-align:center; color:var(--ink-soft); font-size:14px; line-height:1.7}
+
+  .lightbox{position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:22px}
+  .lightbox[hidden]{display:none}
+  .lb-bd{position:absolute; inset:0; background:rgba(6,10,20,.85); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px)}
+  .lightbox img{position:relative; max-width:100%; max-height:90vh; border-radius:12px; box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .lb-x{position:absolute; top:16px; right:16px; z-index:2; border:0; background:rgba(255,255,255,.16); color:#fff; width:40px; height:40px; border-radius:50%; font-size:17px; cursor:pointer}
+
+  /* mobile day popup (bottom sheet) */
+  .sheetwrap{position:fixed; inset:0; z-index:60; display:flex; align-items:flex-end}
+  .sheetwrap[hidden]{display:none}
+  .sheet-backdrop{position:absolute; inset:0; background:rgba(18,26,48,.45)}
+  .sheet{position:relative; width:100%; background:#fff; border-radius:20px 20px 0 0; padding:14px 16px calc(18px + env(safe-area-inset-bottom)); max-height:82vh; overflow:auto; box-shadow:0 -10px 34px rgba(0,0,0,.22); animation:sheetup .2s ease}
+  @keyframes sheetup{from{transform:translateY(100%)} to{transform:translateY(0)}}
+  .sheet::before{content:''; position:absolute; top:7px; left:50%; transform:translateX(-50%); width:38px; height:4px; border-radius:99px; background:#d7dce6}
+  .sheet-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; border-bottom:1px solid var(--line); padding:8px 0 10px; margin-bottom:8px}
+  .sheet-date{font-size:17px; font-weight:700}
+  .sheet-sub{font-size:12px; color:var(--ink-soft); margin-top:2px}
+  .sheet-close{flex:0 0 auto; border:0; background:#f1f3f9; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; color:var(--ink-soft)}
+  .sheet-item{display:grid; grid-template-columns:16px 1fr; gap:11px; align-items:start; padding:10px 2px; border-bottom:1px solid #f2f4f8}
+  .sheet-item:last-child{border-bottom:0}
+  .sheet-dot{width:15px; height:15px; border-radius:50%; margin-top:3px}
+  .sheet-name{font-size:14px; font-weight:600; line-height:1.25}
+  .sheet-en{font-size:11px; color:var(--ink-soft)}
+  .sheet-when{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--brand); margin-top:2px}
+  .sheet-time{font-size:11.5px; color:var(--ink-soft); margin-top:1px}
+  .sheet-empty{font-size:12.5px; color:var(--ink-soft); padding:8px 2px}
+
+  @media (min-width:1024px){
+    html,body{height:100%}
+    .app{height:100dvh; padding-bottom:12px}
+    .planview{flex:1}
+    .guideview{flex:1; min-height:0}
+    .explorer{flex:1; min-height:0}
+    .cals{overflow:auto; padding-right:2px}
+    .panel-list{min-height:0; overflow:auto}
+  }
+  @media (max-width:1023px){ .explorer{grid-template-columns:1fr} .cals{grid-template-columns:1fr 1fr} }
+  @media (max-width:560px){
+    .app{padding:10px 10px 20px}
+    .appbar{flex-wrap:wrap}
+    .updated{margin-left:0; width:100%; justify-content:flex-start}
+    .cals{grid-template-columns:1fr}
+    .items{grid-template-columns:1fr}
+    .groupnav{overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch}
+    .rgroup{flex-wrap:nowrap}
+  }</script>
+<script type="text/plain" id="html-desktop"><div class="app">
+  <header class="appbar">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z" fill="#fff" opacity=".95"/>
+        <path d="M3 8.5v7L12 20V13L3 8.5Z" fill="#fff" opacity=".6"/>
+        <path d="M21 8.5v7L12 20V13l9-4.5Z" fill="#fff" opacity=".8"/></svg></div>
+      <div><div class="bname">Office Relocation Plan</div><div class="btag">แผนการขนย้ายอุปกรณ์สำนักงาน · NTL</div></div>
+    </div>
+    <div class="updated">
+      <button class="ghost" id="refreshBtn">↻ รีเฟรช</button>
+      <span class="status" id="status"><i></i><span>…</span></span>
+      <span class="route-pill">Ari Hills · KSL · Training → BTS / Ari Hills</span>
+    </div>
+  </header>
+
+  <div class="viewsw">
+    <button class="vbtn active" data-view="plan">📅 แผนงาน</button>
+    <button class="vbtn" data-view="data">📦 ข้อมูล / คู่มือ</button>
+  </div>
+
+  <div class="planview" id="planView">
+    <div class="navbar">
+      <div class="seg" id="phasetabs"></div>
+      <div class="groupnav" id="groupnav"></div>
+    </div>
+    <div class="explorer">
+      <div class="cals" id="cals"></div>
+      <aside class="panel-list" id="listPanel"></aside>
+    </div>
+  </div>
+  <div class="guideview" id="guideView" hidden></div>
+
+  <div class="sheetwrap" id="dayPopup" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet">
+      <div class="sheet-head">
+        <div><div class="sheet-date" id="sheetDate"></div><div class="sheet-sub" id="sheetSub"></div></div>
+        <button class="sheet-close" data-close aria-label="ปิด">✕</button>
+      </div>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lb-bd" data-lbclose></div>
+    <button class="lb-x" data-lbclose aria-label="ปิด">✕</button>
+    <img id="lbImg" alt="">
+  </div>
+</div></script>
+<script type="text/plain" id="js-desktop">/* ============================================================
+   1) เชื่อมต่อ Google Sheet:  วาง URL /exec ของ Apps Script ตรงนี้
+   ============================================================ */
+const DATA_URL = "https://script.google.com/macros/s/AKfycbyZJPqGt72BtIhpBtZqpceoBHdy3zAikXVXKBVWzff4wXNBu2StUlAKNJpqJQW0MlE/exec";
+
+/* ---------- ข้อมูลสำรอง (ใช้เมื่อยังไม่เชื่อม Sheet) ---------- */
+const R1='Ari Hills → BTS', R2='KSL → Ari Hills', R3='Ari Hills → Ari Hills', R4='Training → Ari Hills';
+const FALLBACK={
+  activities:[
+    {key:'meet',th:'นัดประชุมฝ่าย',en:'Department Meeting',color:'#0d9488'},
+    {key:'furni',th:'ตรวจนับเฟอร์นิเจอร์ + ติดบาร์โค้ด',en:'Furniture Count + Barcode',color:'#8faedc'},
+    {key:'box',th:'รับกล่องพัสดุ',en:'Receive Boxes',color:'#1b1b8f'},
+    {key:'pack',th:'พนักงาน Pack',en:'Staff Packing',color:'#f5c518'},
+    {key:'final',th:'พนักงาน Final Check',en:'Final Check',color:'#2bb3f0'},
+    {key:'count',th:'ตรวจนับกล่องเอกสาร + คอมพิวเตอร์',en:'Count Boxes + Computers',color:'#ee6fb0'},
+    {key:'report',th:'ส่ง Report ยืนยันรายการ',en:'Confirm Report',color:'#8a5cd1'},
+    {key:'move',th:'ขนย้ายออก',en:'Move Out',color:'#c62b1f'},
+    {key:'test',th:'Test / ติดตั้งระบบ',en:'Test / System Setup',color:'#f07c2c'},
+    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#16a34a'},
+    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#8e8e8e'},
+  ],
+  groups:[
+    {phase:1,route:R1,week:'WEEK 1',floor:'BTS ชั้น 22',hc:229,depts:['IT Infra (50)','IT PS (59)','IT AI (11)','IT MIS (59)','IT SEC (50)'],
+     deptSupplies:{
+       'IT Infra (50)':{origin:'ชั้น 9',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+       'IT AI (11)':{origin:'ชั้น 9, 11',items:[['กล่องเอกสาร',20,'ใบ'],['เทปกาว',2,'ม้วน'],['ป้ายชื่อ',20,'แผ่น']]},
+       'IT MIS (59)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+       'IT SEC (50)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',100,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',100,'แผ่น']]},
+       'IT PS (59)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+     },
+     steps:[['furni','10–11 ส.ค.','09.30–12.00 น.',['8-10','8-11']],['box','24 ส.ค.','ส่งกล่อง 458 ใบ',['8-24']],['pack','27–28 ส.ค.','User แพ็คเอกสาร',['8-27','8-28']],['final','31 ส.ค.–1 ก.ย.','09.30–12.00 น.',['8-31','9-1']],['count','31 ส.ค.–1 ก.ย.','ตรวจนับ BOX+Computer',['8-31','9-1']],['report','2–3 ก.ย.','',['9-2','9-3']],['move','ศ. 4 ก.ย.','17.00 น.+',['9-4']],['test','5–6 ก.ย.','ติดตั้ง+ส่งมอบคอมพ์',['9-5']],['work','7 ก.ย.','เริ่มใช้งาน',['9-7']],['ret','28 ก.ย.','',['9-28']]]},
+    {phase:1,route:R1,week:'WEEK 2',floor:'BTS ชั้น 21',hc:268,depts:['IT DEV (155)','IT ES (113)'],
+     steps:[['furni','10–11 ส.ค.','+ เก้าอี้/Hotdesk 15–16 ส.ค.',['8-10','8-11','8-15','8-16']],['box','24 ส.ค.','ส่งกล่อง 500 ใบ',['8-24']],['pack','2–3 ก.ย.','User แพ็คเอกสาร',['9-2','9-3']],['final','ศ. 4 ก.ย.','09.30–12.00 น.',['9-4']],['count','7–8 ก.ย.','รวมพหลโยธิน ชั้น 17',['9-7','9-8']],['report','9–10 ก.ย.','',['9-9','9-10']],['move','ศ. 11 ก.ย.','17.00–24.00 น.',['9-11']],['test','12 ก.ย.','ติดตั้งคอมพ์',['9-12']],['work','13 ก.ย.','เริ่มใช้งาน',['9-13']],['ret','28 ก.ย.','',['9-28']]]},
+    {phase:1,route:R1,week:'WEEK 3',floor:'BTS ชั้น 23',hc:172,depts:['A&D (18)','OPS COE & GNR (21)','Digital (110)','Insurance–Areegator/Tech','EXCOM ROOM-IT'],
+     steps:[['furni','14 · 17–18 ส.ค.','EXCOM 13.30–15.00 · อื่นๆ 09.30–17.00',['8-14','8-17','8-18']],['box','31 ส.ค.','ส่งกล่อง 600 ใบ',['8-31']],['pack','7–8 ก.ย.','User แพ็คเอกสาร',['9-7','9-8']],['final','9 ก.ย.','09.30–12.00 น.',['9-9']],['count','10–11 · 14–15 ก.ย.','09.30–18.00 น.',['9-10','9-11','9-14','9-15']],['report','16–17 ก.ย.','',['9-16','9-17']],['move','ศ. 18 ก.ย.','17.30 น.+',['9-18']],['test','20 ก.ย.','10.00–17.00 น.',['9-20']],['work','21 ก.ย.','เริ่มใช้งาน',['9-21']],['ret','5 ต.ค.','',['10-5']]]},
+    {phase:1,route:R1,week:'WEEK 4',floor:'BTS ชั้น 24',hc:132,depts:['Insurance ชั้น 16 (132)'],
+     steps:[['furni','19–20 ส.ค.','Workstation/Chair/Other',['8-19','8-20']],['box','11 ก.ย.','ส่งกล่อง 264 ใบ',['9-11']],['pack','16–17 ก.ย.','User แพ็คเอกสาร',['9-16','9-17']],['final','18 ก.ย.','09.30–12.00 น.',['9-18']],['count','21–22 ก.ย.','09.30–18.00 น.',['9-21','9-22']],['report','23–24 ก.ย.','',['9-23','9-24']],['move','ศ. 25 ก.ย.','18.00–24.00 น.',['9-25']],['test','26 ก.ย.','ติดตั้งคอมพ์',['9-26']],['work','27 ก.ย.','เริ่มใช้งาน',['9-27']],['ret','12 ต.ค.','',['10-12']]]},
+    {phase:2,route:R1,week:'WEEK 5',floor:'BTS ชั้น 26',hc:217,depts:['LEGAL (83)','Finance & Accounting (38)','ACADEMY (67)','HP/HR (2)','FRAUD (14)','CORPORATE SUSTAINABILITY (13)'],
+     steps:[['furni','1 ก.ย.','ตรวจนับ Workstation/Chair/Other',['9-1']],['box','2 ต.ค.','ส่งกล่อง 434 ใบ',['10-2']],['pack','8–9 ต.ค.','User แพ็คเอกสาร',['10-8','10-9']],['final','12 ต.ค.','09.30–12.00 น.',['10-12']],['count','13–14 ต.ค.','ตรวจนับ BOX+Computer',['10-13','10-14']],['report','15 ต.ค.','',['10-15']],['move','ศ. 16 ต.ค.','ขนย้ายออก',['10-16']],['test','17–18 ต.ค.','ติดตั้งคอมพ์',['10-17']],['work','19 ต.ค.','เริ่มใช้งาน',['10-19']],['ret','2 พ.ย.','',['11-2']]]},
+    {phase:2,route:R1,week:'WEEK 6',floor:'BTS ชั้น 27',hc:205,depts:['OPS RISK','SURPRISE CHECK (FIELD)','CREDIT (110)','RISK','COMPLIANCE (13)','IA (13)'],
+     steps:[['furni','7–8 ก.ย.','ชั้น14:7 · ชั้น11:8 ก.ย.',['9-7','9-8']],['box','9 ต.ค.','ส่งกล่อง 410 ใบ',['10-9']],['pack','15–16 ต.ค.','User แพ็คเอกสาร',['10-15','10-16']],['final','19 ต.ค.','09.30–12.00 น.',['10-19']],['count','20–21 ต.ค.','09.30–18.00 น.',['10-20','10-21']],['report','22 ต.ค.','',['10-22']],['move','ศ. 23 ต.ค.','ขนย้ายออก',['10-23']],['test','24–25 ต.ค.','ติดตั้งคอมพ์',['10-24']],['work','26 ต.ค.','เริ่มใช้งาน',['10-26']],['ret','9 พ.ย.','',['11-9']]]},
+    {phase:2,route:R1,week:'WEEK 7',floor:'BTS ชั้น 28',hc:291,depts:['LOAN COLLECTION (BDSM) (189)','MARKETING (102)'],
+     steps:[['furni','14 ก.ย.','ตรวจนับ Workstation/Chair/Other',['9-14']],['box','16 ต.ค.','ส่งกล่อง 408 ใบ',['10-16']],['pack','22–23 ต.ค.','User แพ็คเอกสาร',['10-22','10-23']],['final','26 ต.ค.','09.30–12.00 น.',['10-26']],['count','27–28 ต.ค.','ตรวจนับ BOX+Computer',['10-27','10-28']],['report','29 ต.ค.','',['10-29']],['move','ศ. 30 ต.ค.','ขนย้ายออก',['10-30']],['test','31 ต.ค.–1 พ.ย.','ติดตั้งคอมพ์',['10-31']],['work','2 พ.ย.','เริ่มใช้งาน',['11-2']],['ret','16 พ.ย.','',['11-16']]]},
+    {phase:2,route:R1,week:'WEEK 8',floor:'BTS ชั้น 29',hc:209,depts:['LOAN SALES (CLD) (~201)','MD OFFICE (8)'],
+     steps:[['furni','23–30 ต.ค.','เฟอร์นิเจอร์เดิม (แผนภาพรวม)',[]],['test','2–8 พ.ย.','NTL IT Setup / ทดสอบระบบ',['11-5']],['move','ศ. 6 พ.ย.','Move Out จาก Ari Hills',['11-6']],['work','9 พ.ย.','Move in / เริ่มใช้งาน',['11-9']]]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 9',hc:265,depts:['TLS-Loan (Sales) TM1-5 (265)'],steps:[]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 10',hc:18,depts:['Telesale Loan (Non-Sales) (18)'],steps:[]},
+    {phase:2,route:R2,week:'เฟส 2.2',floor:'Ari Hills ชั้น 11',hc:165,depts:['OPS-CS (165)'],steps:[]},
+    {phase:3,route:R1,week:'เฟส 3.1',floor:'BTS ชั้น 25',hc:null,depts:['Training & Academy'],
+     steps:[['furni','6–13 พ.ย.','เฟอร์นิเจอร์เดิม (แผนภาพรวม)',[]],['test','16–22 พ.ย.','NTL IT Setup / ทดสอบระบบ',['11-18']],['move','ศ. 20 พ.ย.','Move Out จาก Ari Hills',['11-20']],['work','23 พ.ย.','Move in / เริ่มใช้งาน',['11-23']]]},
+    {phase:3,route:R2,week:'เฟส 3.2',floor:'Ari Hills ชั้น 14',hc:123,depts:['Telesales Insurance (Non-Sales) QA (NEW) (18)','Telesales Insurance (Sales) New Auto (105)'],steps:[]},
+    {phase:3,route:R2,week:'เฟส 3.2',floor:'Ari Hills ชั้น 15',hc:318,depts:['Telesales Insurance (Sales) PA (72)','Telesales Insurance (Sales) Renew (206)','Telesales Insurance (Non-Sales) (40)'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 10',hc:20,depts:['CLD Phone (Inbound) (20)'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 11',hc:null,depts:['OPS REG','OPS Insurance'],steps:[]},
+    {phase:3,route:R3,week:'เฟส 3.3',floor:'Ari Hills ชั้น 12',hc:null,depts:['OPS BSCS Mailservice','OPS BSCS'],steps:[]},
+    {phase:3,route:R4,week:'เฟส 3.4',floor:'Ari Hills ชั้น 12A',hc:null,depts:['Training ESV'],steps:[]},
+  ]
+};
+
+/* ---------- globals populated from data ---------- */
+FALLBACK.guide=[
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 1 · เตรียมกล่อง',desc:'ประกอบกล่อง ติดเทปก้นกล่องให้แน่น',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 2 · แพ็คของ/เอกสาร',desc:'เรียงของ ใส่ไม่เกินน้ำหนักที่ยกไหว รองกันกระแทก',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 3 · ปิดกล่อง + ติดบาร์โค้ด',desc:'ปิดฝา ติดเทป ติดบาร์โค้ด/ป้ายชั้นปลายทาง',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'video',title:'วิดีโอสาธิตการแพ็ค',desc:'คลิปสั้นวิธีแพ็คและติดบาร์โค้ด',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'pdf',title:'คู่มือการแพ็ค (PDF)',desc:'ดาวน์โหลดคู่มือฉบับเต็ม',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องเอกสารมาตรฐาน',desc:'ขนาด 40×30×30 ซม. · สำหรับเอกสาร/ของใช้',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องคอมพิวเตอร์',desc:'สำหรับ PC/จอ · บุกันกระแทก',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องใหญ่ (Bulk)',desc:'ของชิ้นใหญ่ · ระวังน้ำหนัก',url:''},
+  {section:'การขนย้าย',type:'text',title:'ข้อควรระวังการขนย้าย',desc:'ยกด้วยเข่า ไม่เกินน้ำหนักที่กำหนด · ติดป้ายชั้นปลายทางทุกกล่อง · ระวังทางเดิน/ลิฟต์',url:''},
+  {section:'การขนย้าย',type:'video',title:'วิดีโอวันขนย้าย',desc:'ลำดับงานและการโหลดรถ',url:''},
+  {section:'การขนย้าย',type:'pdf',title:'แผนผังจุดจอด/เส้นทางรถ (PDF)',desc:'Ari Hills → BTS',url:''},
+];
+function ytEmbed(u){if(!u)return null;var m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);if(m)return'https://www.youtube.com/embed/'+m[1];var v=u.match(/vimeo\.com\/(\d+)/);if(v)return'https://player.vimeo.com/video/'+v[1];return null;}
+function gMedia(it){var t=(it.type||'').toLowerCase();
+  if(t==='image'||t==='box'){ if(it.url)return'<div class="gmedia" data-img="'+it.url+'"><span class="gtag">'+(t==='box'?'กล่อง':'รูป')+'</span><img loading="lazy" src="'+it.url+'" alt=""></div>';
+    return'<div class="gmedia"><div class="gph"><b>🖼️ รูปจะแสดงที่นี่</b><span>ใส่ลิงก์รูปในชีต Guide</span></div></div>'; }
+  if(t==='video'){var em=ytEmbed(it.url);
+    if(em)return'<div class="gmedia gembedwrap"><iframe class="gembed" src="'+em+'" allowfullscreen loading="lazy"></iframe></div>';
+    if(it.url)return'<div class="gmedia gembedwrap"><video class="gvid" controls preload="none" '+(it.thumb?'poster="'+it.thumb+'"':'')+' src="'+it.url+'"></video></div>';
+    return'<div class="gmedia"><div class="gph"><b>▶️ วิดีโอจะแสดงที่นี่</b><span>ใส่ลิงก์วิดีโอในชีต Guide</span></div></div>'; }
+  if(t==='pdf')return'<div class="gmedia gpdf"><div class="gph"><b>📄 PDF</b></div></div>';
+  return'';}
+function guideHTML(guide){
+  if(!guide||!guide.length)return'<div class="gempty">ยังไม่มีข้อมูลในหน้านี้<br><small>เพิ่มรูป/วิดีโอ/PDF ได้ในชีต “Guide” ของ Google Sheet</small></div>';
+  var order=[],map={};
+  guide.forEach(function(it){var s=it.section||'อื่น ๆ';if(!map[s]){map[s]=[];order.push(s);}map[s].push(it);});
+  return order.map(function(sec){
+    var cards=map[sec].map(function(it){
+      var btn=it.type==='pdf'?(it.url?'<a class="gbtn" href="'+it.url+'" target="_blank" rel="noopener">เปิด PDF ↗</a>':'<span class="gbtn dis">รอลิงก์ PDF</span>'):'';
+      return'<div class="gcard">'+gMedia(it)+'<div class="gbody"><div class="gtitle">'+(it.title||'')+'</div>'+(it.desc?'<div class="gdesc">'+it.desc+'</div>':'')+btn+'</div></div>';
+    }).join('');
+    return'<div class="gsec"><h3 class="gsec-h">'+sec+'</h3><div class="ggrid">'+cards+'</div></div>';
+  }).join('');
+}
+let ACT={}, HEX={}, MID={}, WHITE=new Set(), STD_STEPS=[], GROUPS=[], GUIDE=[];
+const GRAY_EMPTY='#dde1e9';
+const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
+const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
+const MONTHS=[8,9,10,11], YEAR=2026, DOW=['S','M','T','W','T','F','S'];
+let cur=[], curGroup=0, curDept=-1;
+
+const phasetabs=document.getElementById('phasetabs');
+const groupnav=document.getElementById('groupnav');
+const listPanel=document.getElementById('listPanel');
+const calsEl=document.getElementById('cals');
+const statusEl=document.getElementById('status');
+
+function lighten(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+function isDark(hex){const n=parseInt(hex.slice(1),16);const r=n>>16,g=(n>>8)&255,b=n&255;return (0.299*r+0.587*g+0.114*b)<150;}
+
+function applyData(data){
+  ACT={};HEX={};MID={};WHITE=new Set();STD_STEPS=[];
+  (data.activities||[]).forEach(a=>{ACT[a.key]={name:a.th,en:a.en||''};HEX[a.key]=a.color;MID[a.key]=lighten(a.color,.5);if(isDark(a.color))WHITE.add(a.key);STD_STEPS.push(a.key);});
+  GROUPS=data.groups||[];
+  GUIDE=(data.guide&&data.guide.length)?data.guide:(FALLBACK.guide||[]);
+  buildPhaseTabs();
+  const defaultPhase = GROUPS.some(g=>g.phase===2) ? 2 : ((GROUPS[0]&&GROUPS[0].phase)||1);
+  selectPhase(defaultPhase);
+  (function(){var _L=document.getElementById('loader');if(_L&&!_L.classList.contains('hide')){_L.classList.add('hide');setTimeout(function(){_L&&_L.parentNode&&_L.parentNode.removeChild(_L);},380);}})();
+}
+
+/* ---------- data-driven helpers ---------- */
+function stepsOf(g){const m={};(g.steps||[]).forEach(s=>{m[s[0]]=s;});return STD_STEPS.map(k=> m[k] || [k,'รอกำหนดการ','',[]] );}
+function deptStepsOf(g,dname){const src=(g.deptSteps&&g.deptSteps[dname])?g.deptSteps[dname]:(g.steps||[]);const m={};src.forEach(s=>{m[s[0]]=s;});return STD_STEPS.map(k=> m[k] || [k,'รอกำหนดการ','',[]] );}
+function effSteps(g){return curDept<0 ? stepsOf(g) : deptStepsOf(g, g.depts[curDept]);}
+function markMap(g){const m={};effSteps(g).forEach(([k,,,cal])=>(cal||[]).forEach(d=>{(m[d]=m[d]||[]).push(k);}));return m;}
+
+function itemHTML(steps){
+  return steps.map(([k,when,time])=>{
+    const tbd=when==='รอกำหนดการ'?' tbd':''; const a=ACT[k]||{name:k,en:''};
+    return `<button class="item" data-key="${k}" style="--ac:${HEX[k]||'#999'}"><span class="idot"></span>
+      <span><span class="iname">${a.name}</span><span class="ien">${a.en}</span><span class="iwhen${tbd}">${when}</span>${time?`<span class="itime">${time}</span>`:''}</span></button>`;
+  }).join('');
+}
+function suppliesHTML(g){
+  if(!g.deptSupplies) return '';
+  function card(dept){
+    const s=g.deptSupplies[dept]; if(!s) return '';
+    const rows=(s.items||[]).map(it=>`<div class="suprow"><span>${it[0]}</span><b>${it[1]} ${it[2]||''}</b></div>`).join('');
+    const org=s.origin?` · ต้นทาง <b>${s.origin}</b>`:'';
+    const head=curDept<0?`<div class="supdept">${dept}</div>`:'';
+    return `<div class="supbox">${head}<div class="suphead">📦 ของที่ต้องใช้ (หลังตรวจนับ)${org}</div>${rows}</div>`;
+  }
+  let html;
+  if(curDept>=0) html=card(g.depts[curDept]);
+  else html=g.depts.filter(d=>g.deptSupplies[d]).map(card).join('');
+  return html?`<div class="supsec"><div class="suplabel">ของที่ต้องใช้ในการขนย้าย</div>${html}</div>`:'';
+}
+function renderList(g){
+  const hc=g.hc?`<div class="pl-meta">รวม <span class="hc">${g.hc} คน</span></div>`:'';
+  const pills=`<button class="dpill ${curDept<0?'active':''}" data-d="-1">ทั้งชั้น (รวม)</button>`+
+    g.depts.map((d,i)=>`<button class="dpill ${curDept===i?'active':''}" data-d="${i}">${d}</button>`).join('');
+  const steps=effSteps(g);
+  const dated=steps.some(s=>s[3]&&s[3].length);
+  const scopeName=curDept<0?'ทั้งชั้น (รวมทุกฝ่าย)':g.depts[curDept];
+  const note=dated
+    ? `<div class="scopenote">กำหนดการของ <b>${scopeName}</b>${curDept<0?' — กดเลือกฝ่ายด้านบนเพื่อดูวันเฉพาะฝ่าย':''}</div>`
+    : `<div class="scopenote">* ${curDept<0?'ยังไม่มีกำหนดการรายวัน':'ฝ่าย '+scopeName+' ยังไม่มีกำหนดการ'} — กรอกวัน/เวลาในไฟล์ Google Sheet</div>`;
+  listPanel.innerHTML=`
+    <div class="pl-head">
+      <div class="pl-top"><span class="weekbadge">${g.week}</span><span class="pl-floor">${g.floor}</span></div>
+      <div class="routetag">เส้นทาง: <b>${g.route}</b></div>${hc}
+      <div class="deptpills" id="deptpills">${pills}</div>
+    </div>
+    ${note}
+    <div class="items" id="items">${itemHTML(steps)}</div>
+    ${suppliesHTML(g)}`;
+}
+
+function monthGrid(month,marks){
+  const first=new Date(YEAR,month-1,1); const lead=first.getDay(); const days=new Date(YEAR,month,0).getDate();
+  let cells='',col=0; const push=h=>{cells+=h;col=(col+1)%7;};
+  for(let i=0;i<lead;i++) push(`<div class="day pad" data-col="${col}"></div>`);
+  for(let d=1;d<=days;d++){
+    const acts=marks[month+'-'+d];
+    if(!acts){push(`<div class="day inmonth" data-col="${col}" data-fill="${GRAY_EMPTY}" style="--fill:${GRAY_EMPTY}"><span class="num">${d}</span></div>`);continue;}
+    const dk=` data-keys="${acts.join(',')}"`; const fill=MID[acts[0]]||GRAY_EMPTY;
+    let dots=''; if(acts.length>1) dots=`<span class="dots">${acts.slice(1,4).map(k=>`<i style="background:${HEX[k]}"></i>`).join('')}</span>`;
+    push(`<div class="day inmonth act" data-col="${col}" data-date="${month}-${d}"${dk} data-fill="${fill}" style="--fill:${fill}"><span class="num">${d}</span>${dots}</div>`);
+  }
+  return `<div class="cal"><h3>${EN_MONTH[month]} ${YEAR}<span>${TH_MONTH[month]}</span></h3>
+    <div class="cal-grid">${DOW.map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div>`;
+}
+function renderCals(g){const mk=markMap(g); calsEl.innerHTML=MONTHS.map(m=>monthGrid(m,mk)).join(''); }
+
+function arrEq(a,b){return a.length===b.length&&a.every(x=>b.includes(x));}
+function resetDays(){document.querySelectorAll('.day.inmonth').forEach(dd=>{dd.classList.remove('sel','txtwhite','muted','link-right');if(dd.dataset.fill)dd.style.setProperty('--fill',dd.dataset.fill);});}
+function clearSel(){cur=[];document.querySelectorAll('.item.sel,.item.dim').forEach(el=>el.classList.remove('sel','dim'));resetDays();}
+function select(keys){
+  keys=keys.filter(Boolean);
+  if(!keys.length||arrEq(keys,cur)){clearSel();return;}
+  cur=keys;
+  document.querySelectorAll('.item').forEach(it=>{it.classList.remove('sel','dim');it.classList.add(keys.includes(it.dataset.key)?'sel':'dim');});
+  const days=[...document.querySelectorAll('.day.inmonth')];
+  const hasMatch=days.some(dd=>(dd.dataset.keys||'').split(',').some(k=>keys.includes(k)));
+  if(!hasMatch){resetDays();return;}
+  days.forEach(dd=>{
+    dd.classList.remove('sel','txtwhite','muted','link-right');
+    const dk=dd.dataset.keys?dd.dataset.keys.split(','):[]; const hit=dk.find(k=>keys.includes(k));
+    if(hit){dd.classList.add('sel');dd.style.setProperty('--fill',HEX[hit]);if(WHITE.has(hit))dd.classList.add('txtwhite');}
+    else dd.classList.add('muted');
+  });
+  applyLinks();
+}
+function applyLinks(){
+  document.querySelectorAll('.day.link-right').forEach(d=>d.classList.remove('link-right'));
+  document.querySelectorAll('.cal-grid').forEach(grid=>{const days=[...grid.querySelectorAll('.day')];
+    days.forEach((d,idx)=>{if(!d.classList.contains('sel'))return;if(d.dataset.col==='6')return;const nx=days[idx+1];if(nx&&nx.classList.contains('sel'))d.classList.add('link-right');});});
+}
+
+function selectDept(i){curDept=i; const g=GROUPS[curGroup]; renderCals(g); renderList(g); reselect();}
+listPanel.addEventListener('click',e=>{
+  const p=e.target.closest('.dpill'); if(p){selectDept(+p.dataset.d);return;}
+  const it=e.target.closest('.item'); if(it) select([it.dataset.key]);
+});
+calsEl.addEventListener('click',e=>{const d=e.target.closest('.day.act');if(!d)return;
+  const keys=d.dataset.keys?d.dataset.keys.split(','):[];
+  if(window.matchMedia('(max-width:1023px)').matches) openDayPopup(d,keys);
+  else select(keys);
+});
+const popup=document.getElementById('dayPopup');
+const sheetBody=document.getElementById('sheetBody');
+const TH_WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+function openDayPopup(dayEl,keys){
+  const g=GROUPS[curGroup];
+  const p=(dayEl.dataset.date||'').split('-'); const m=+p[0], dd=+p[1];
+  const wd=TH_WD[new Date(YEAR,m-1,dd).getDay()];
+  const scope=curDept<0?'ทั้งชั้น (รวม)':g.depts[curDept];
+  const sm={}; effSteps(g).forEach(s=>{sm[s[0]]=s;});
+  const rows=keys.map(k=>{const st=sm[k]||[k,'',''];const a=ACT[k]||{name:k,en:''};
+    const when=(st[1]&&st[1]!=='รอกำหนดการ')?`<div class="sheet-when">${st[1]}</div>`:'';
+    const time=st[2]?`<div class="sheet-time">${st[2]}</div>`:'';
+    return `<div class="sheet-item"><span class="sheet-dot" style="background:${HEX[k]||'#999'}"></span>
+      <div><div class="sheet-name">${a.name}</div><div class="sheet-en">${a.en}</div>${when}${time}</div></div>`;
+  }).join('');
+  document.getElementById('sheetDate').textContent=`${dd} ${TH_MONTH[m]||''} ${YEAR}`;
+  document.getElementById('sheetSub').textContent=`วัน${wd} · ${g.floor} · ${scope}`;
+  sheetBody.innerHTML=rows||`<div class="sheet-empty">ไม่มีรายการในวันนี้</div>`;
+  popup.hidden=false;
+}
+popup.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) popup.hidden=true; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ popup.hidden=true; document.getElementById('lightbox').hidden=true; } });
+
+/* view switch (แผนงาน / ข้อมูล) */
+document.querySelector('.viewsw').addEventListener('click',e=>{
+  const b=e.target.closest('.vbtn'); if(!b) return;
+  document.querySelectorAll('.vbtn').forEach(x=>x.classList.toggle('active',x===b));
+  const isData=b.dataset.view==='data';
+  document.getElementById('planView').hidden=isData;
+  const gv=document.getElementById('guideView'); gv.hidden=!isData;
+  if(isData) gv.innerHTML='<div style="padding:2px 2px 30px">'+guideHTML(GUIDE)+'</div>';
+});
+/* image lightbox */
+const lb=document.getElementById('lightbox');
+document.getElementById('guideView').addEventListener('click',e=>{
+  const m=e.target.closest('[data-img]'); if(!m) return;
+  document.getElementById('lbImg').src=m.dataset.img; lb.hidden=false;
+});
+lb.addEventListener('click',e=>{ if(e.target.closest('[data-lbclose]')) lb.hidden=true; });
+function reselect(){const k=cur.slice();cur=[];if(k.length)select(k);}
+
+function selectGroup(i){curGroup=i;curDept=-1;cur=[];const g=GROUPS[i];renderCals(g);renderList(g);
+  document.querySelectorAll('.groupnav button').forEach(b=>b.classList.toggle('active',+b.dataset.i===i));}
+const PHASES=[[1,'เฟส 1','ชั้น 21–24'],[2,'เฟส 2','ชั้น 26–29 + Ari'],[3,'เฟส 3','ชั้น 25 + Ari']];
+const ROUTE_ORDER=[R1,R2,R3,R4];
+function buildPhaseTabs(){
+  phasetabs.innerHTML='';
+  PHASES.forEach(([p,t,sub])=>{ if(!GROUPS.some(g=>g.phase===p))return;
+    const b=document.createElement('button');b.dataset.p=p;b.innerHTML=`${t}<small>${sub}</small>`;b.onclick=()=>selectPhase(p);phasetabs.appendChild(b);});
+}
+function renderGroupNav(phase){
+  groupnav.innerHTML='';
+  ROUTE_ORDER.forEach(rt=>{
+    const idxs=GROUPS.map((g,i)=>[g,i]).filter(([g])=>g.phase===phase&&g.route===rt).map(([,i])=>i);
+    if(!idxs.length)return;
+    const rg=document.createElement('div');rg.className='rgroup';rg.innerHTML=`<span class="rlabel">${rt}</span>`;
+    idxs.forEach(i=>{const b=document.createElement('button');b.dataset.i=i;b.textContent=GROUPS[i].floor.replace('Ari Hills ','Ari ').replace('BTS ','');b.onclick=()=>selectGroup(i);rg.appendChild(b);});
+    groupnav.appendChild(rg);
+  });
+  selectGroup(GROUPS.findIndex(g=>g.phase===phase));
+}
+function selectPhase(p){document.querySelectorAll('#phasetabs button').forEach(b=>b.classList.toggle('active',+b.dataset.p===p));renderGroupNav(p);}
+
+/* ---------- data loading (JSONP via Apps Script) ---------- */
+function setStatus(state,text){statusEl.className='status '+state; statusEl.querySelector('span').textContent=text;}
+function normalize(d){ // accept either {activities,groups} or fall back
+  if(!d||!d.groups||!d.groups.length) throw new Error('empty');
+  if(!d.activities||!d.activities.length) d.activities=FALLBACK.activities;
+  return d;
+}
+let _cb=0;
+function loadData(){
+  if(!DATA_URL){ applyData(FALLBACK); setStatus('','Offline'); return; }
+  setStatus('loading','กำลังเชื่อมต่อ…');
+  const cbName='__mw_'+(++_cb);
+  const timer=setTimeout(()=>{ cleanup(); applyData(FALLBACK); setStatus('','Offline'); },12000);
+  function cleanup(){ try{delete window[cbName];}catch(e){window[cbName]=undefined;} if(s&&s.parentNode)s.parentNode.removeChild(s); clearTimeout(timer); }
+  window[cbName]=(data)=>{ cleanup(); try{ applyData(normalize(data)); setStatus('live','Online'); }catch(e){ applyData(FALLBACK); setStatus('','Offline'); } };
+  const s=document.createElement('script');
+  s.src=DATA_URL+(DATA_URL.includes('?')?'&':'?')+'callback='+cbName+'&t='+Date.now();
+  s.onerror=()=>{ cleanup(); applyData(FALLBACK); setStatus('','Offline'); };
+  document.head.appendChild(s);
+}
+document.getElementById('refreshBtn').onclick=loadData;
+loadData();</script>
+
+<script type="text/plain" id="css-mobile">:root{
     --paper:#f4f6fb; --card:#ffffff; --ink:#1b2431; --ink-soft:#5b6678;
     --line:#e6eaf2; --accent:#1b2e6b; --accent-soft:#eef1f9; --cal-empty:#dde1e9;
     --shadow:0 2px 10px rgba(20,30,60,.06); --tab:#ffffff; --tabink:#8a93a8; --sb:#c7cfdd;
@@ -99,6 +656,52 @@
   .dots i{width:4px; height:4px; border-radius:50%}
   .calempty{background:var(--card); border:1px dashed var(--line); border-radius:16px; padding:30px 18px; text-align:center; color:var(--ink-soft); font-size:13px; line-height:1.6}
 
+  /* supplies (after counting) */
+  .supbox{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:11px 13px; margin-bottom:9px; box-shadow:var(--shadow)}
+  .supdept{font-size:12.5px; font-weight:700; color:var(--accent); margin-bottom:5px}
+  .suphead{font-size:11px; color:var(--ink-soft); margin-bottom:7px}
+  .suphead b{color:var(--ink)}
+  .suprow{display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:5px 0; border-top:1px dashed var(--line)}
+  .suprow:first-of-type{border-top:0}
+  .suprow b{font-family:"IBM Plex Mono",monospace; font-weight:600; color:var(--accent)}
+
+  /* home data banner */
+  .databanner{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:linear-gradient(135deg,var(--accent),#16234f); color:#fff; border:0; border-radius:16px; padding:14px 15px; margin-bottom:16px; cursor:pointer; box-shadow:var(--shadow)}
+  .databanner .dbi{font-size:24px; flex:0 0 auto}
+  .databanner .dbt b{font-size:15px; font-weight:700; display:block}
+  .databanner .dbt small{font-size:11px; opacity:.85}
+  .databanner .chev{margin-left:auto; font-size:20px; opacity:.8}
+
+  /* guide / data page */
+  .gsec{margin-bottom:22px}
+  .gsec-h{font-size:15px; font-weight:700; margin:0 0 11px; display:flex; align-items:center; gap:8px}
+  .gsec-h::before{content:''; width:4px; height:16px; border-radius:2px; background:var(--accent)}
+  .ggrid{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+  .gcard{background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:var(--shadow)}
+  .gmedia{aspect-ratio:16/10; background:var(--accent-soft); position:relative; display:grid; place-items:center; overflow:hidden}
+  .gmedia[data-img]{cursor:zoom-in}
+  .gmedia img{width:100%; height:100%; object-fit:cover}
+  .gembedwrap{aspect-ratio:16/9}
+  .gembed,.gvid{width:100%; height:100%; border:0; display:block; object-fit:cover; background:#000}
+  .gph{display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--ink-soft); text-align:center; padding:12px}
+  .gph b{font-size:13px; font-weight:600; color:var(--ink-soft)}
+  .gph span{font-size:9.5px}
+  .gpdf .gph b{color:#d9534f}
+  .gtag{position:absolute; top:7px; left:7px; z-index:1; font-size:9px; font-weight:600; background:rgba(15,20,35,.6); color:#fff; padding:2px 7px; border-radius:6px}
+  .gbody{padding:9px 11px 11px}
+  .gtitle{font-size:12.5px; font-weight:700; line-height:1.3}
+  .gdesc{font-size:10.5px; color:var(--ink-soft); margin-top:3px; line-height:1.4}
+  .gbtn{display:inline-flex; align-items:center; gap:6px; margin-top:8px; font-size:11.5px; font-weight:600; color:var(--accent); background:var(--accent-soft); border:1px solid var(--line); padding:6px 11px; border-radius:8px; text-decoration:none; cursor:pointer}
+  .gbtn.dis{color:#9aa4bb; cursor:default}
+  .gempty{border:1px dashed var(--line); border-radius:16px; padding:34px 18px; text-align:center; color:var(--ink-soft); font-size:13px; line-height:1.7}
+
+  /* image lightbox */
+  .lightbox{position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:20px}
+  .lightbox[hidden]{display:none}
+  .lb-bd{position:absolute; inset:0; background:rgba(6,10,20,.85); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px)}
+  .lightbox img{position:relative; max-width:100%; max-height:88vh; border-radius:12px; box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .lb-x{position:absolute; top:16px; right:16px; z-index:2; border:0; background:rgba(255,255,255,.16); color:#fff; width:40px; height:40px; border-radius:50%; font-size:17px; cursor:pointer}
+
   /* bottom tab bar */
   .tabbar{position:fixed; left:50%; transform:translateX(-50%); bottom:0; width:100%; max-width:520px; background:var(--tab); border-top:1px solid var(--line); display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom)); z-index:20; box-shadow:0 -4px 20px rgba(0,0,0,.06)}
   .tabbar[hidden]{display:none}
@@ -148,11 +751,8 @@
   .sen{font-size:11px; color:var(--ink-soft); margin-top:1px}
   .swhen{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--accent); margin-top:3px}
   .stime{font-size:11.5px; color:var(--ink-soft); margin-top:1px}
-  .sempty{font-size:12.5px; color:var(--ink-soft); padding:14px 0}
-</style>
-</head>
-<body>
-<div class="app">
+  .sempty{font-size:12.5px; color:var(--ink-soft); padding:14px 0}</script>
+<script type="text/plain" id="html-mobile"><div class="app">
   <!-- ===== HOME: department buttons only ===== -->
   <section class="screen on" id="screenHome">
     <div class="mhead">
@@ -189,6 +789,18 @@
     </div>
     <div class="scroll" id="calScroll"></div>
   </section>
+
+  <!-- ===== DATA / GUIDE ===== -->
+  <section class="screen hasbar" id="screenData">
+    <div class="mhead">
+      <div class="hrow">
+        <button class="backbtn" data-nav="home">‹</button>
+        <div style="min-width:0"><div class="mtitle">ข้อมูล / คู่มือ</div><div class="msub">แพ็คกล่อง · ข้อมูลกล่อง · การขนย้าย</div></div>
+        <label class="themesw"><input type="checkbox" class="themechk"><span class="tk"></span></label>
+      </div>
+    </div>
+    <div class="scroll" id="dataScroll"></div>
+  </section>
 </div>
 
 <nav class="tabbar" id="tabbar" hidden>
@@ -204,6 +816,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     <span>ปฏิทิน</span>
   </button>
+  <button class="tab" data-nav="data">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 4v5"/></svg>
+    <span>ข้อมูล</span>
+  </button>
 </nav>
 
 <div class="sheetwrap" id="dayPopup" hidden>
@@ -215,14 +831,12 @@
   </div>
 </div>
 
-<div class="loader" id="loader">
-  <div class="spin" aria-label="กำลังโหลด"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="loadtxt">กำลังโหลดแผนงาน…</div>
-  <div class="loadsub">Office Relocation Plan · NTL</div>
-</div>
-
-<script>
-const DATA_URL = "https://script.google.com/macros/s/AKfycbyZJPqGt72BtIhpBtZqpceoBHdy3zAikXVXKBVWzff4wXNBu2StUlAKNJpqJQW0MlE/exec";
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lb-bd" data-lbclose></div>
+  <button class="lb-x" data-lbclose aria-label="ปิด">✕</button>
+  <img id="lbImg" alt="">
+</div></script>
+<script type="text/plain" id="js-mobile">const DATA_URL = "https://script.google.com/macros/s/AKfycbyZJPqGt72BtIhpBtZqpceoBHdy3zAikXVXKBVWzff4wXNBu2StUlAKNJpqJQW0MlE/exec";
 const R1='Ari Hills → BTS', R2='KSL → Ari Hills', R3='Ari Hills → Ari Hills', R4='Training → Ari Hills';
 const FALLBACK={
   activities:[
@@ -240,6 +854,13 @@ const FALLBACK={
   ],
   groups:[
     {phase:1,route:R1,week:'WEEK 1',floor:'BTS ชั้น 22',hc:229,depts:['IT Infra (50)','IT PS (59)','IT AI (11)','IT MIS (59)','IT SEC (50)'],
+     deptSupplies:{
+       'IT Infra (50)':{origin:'ชั้น 9',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+       'IT AI (11)':{origin:'ชั้น 9, 11',items:[['กล่องเอกสาร',20,'ใบ'],['เทปกาว',2,'ม้วน'],['ป้ายชื่อ',20,'แผ่น']]},
+       'IT MIS (59)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+       'IT SEC (50)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',100,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',100,'แผ่น']]},
+       'IT PS (59)':{origin:'ชั้น 11',items:[['กล่องเอกสาร',120,'ใบ'],['เทปกาว',7,'ม้วน'],['ป้ายชื่อ',120,'แผ่น']]},
+     },
      steps:[['furni','10–11 ส.ค.','09.30–12.00 น.',['8-10','8-11']],['box','24 ส.ค.','ส่งกล่อง 458 ใบ',['8-24']],['pack','27–28 ส.ค.','User แพ็คเอกสาร',['8-27','8-28']],['final','31 ส.ค.–1 ก.ย.','09.30–12.00 น.',['8-31','9-1']],['count','31 ส.ค.–1 ก.ย.','ตรวจนับ BOX+Computer',['8-31','9-1']],['report','2–3 ก.ย.','',['9-2','9-3']],['move','ศ. 4 ก.ย.','17.00 น.+',['9-4']],['test','5–6 ก.ย.','ติดตั้ง+ส่งมอบคอมพ์',['9-5']],['work','7 ก.ย.','เริ่มใช้งาน',['9-7']],['ret','28 ก.ย.','',['9-28']]]},
     {phase:1,route:R1,week:'WEEK 2',floor:'BTS ชั้น 21',hc:268,depts:['IT DEV (155)','IT ES (113)'],
      steps:[['furni','10–11 ส.ค.','',['8-10','8-11','8-15','8-16']],['box','24 ส.ค.','ส่งกล่อง 500 ใบ',['8-24']],['pack','2–3 ก.ย.','',['9-2','9-3']],['final','4 ก.ย.','',['9-4']],['count','7–8 ก.ย.','',['9-7','9-8']],['report','9–10 ก.ย.','',['9-9','9-10']],['move','11 ก.ย.','',['9-11']],['test','12 ก.ย.','',['9-12']],['work','13 ก.ย.','',['9-13']],['ret','28 ก.ย.','',['9-28']]]},
@@ -269,7 +890,54 @@ const FALLBACK={
   ]
 };
 
-let ACT={},HEX={},MID={},WHITENUM=new Set(),STD_STEPS=[],GROUPS=[];
+let ACT={},HEX={},MID={},WHITENUM=new Set(),STD_STEPS=[],GROUPS=[],GUIDE=[];
+FALLBACK.guide=[
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 1 · เตรียมกล่อง',desc:'ประกอบกล่อง ติดเทปก้นกล่องให้แน่น',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 2 · แพ็คของ/เอกสาร',desc:'เรียงของ ใส่ไม่เกินน้ำหนักที่ยกไหว รองกันกระแทก',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'image',title:'ขั้นตอนที่ 3 · ปิดกล่อง + ติดบาร์โค้ด',desc:'ปิดฝา ติดเทป ติดบาร์โค้ด/ป้ายชั้นปลายทาง',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'video',title:'วิดีโอสาธิตการแพ็ค',desc:'คลิปสั้นวิธีแพ็คและติดบาร์โค้ด',url:'',thumb:''},
+  {section:'ขั้นตอนการแพ็คกล่อง',type:'pdf',title:'คู่มือการแพ็ค (PDF)',desc:'ดาวน์โหลดคู่มือฉบับเต็ม',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องเอกสารมาตรฐาน',desc:'ขนาด 40×30×30 ซม. · สำหรับเอกสาร/ของใช้',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องคอมพิวเตอร์',desc:'สำหรับ PC/จอ · บุกันกระแทก',url:''},
+  {section:'ข้อมูลกล่อง',type:'box',title:'กล่องใหญ่ (Bulk)',desc:'ของชิ้นใหญ่ · ระวังน้ำหนัก',url:''},
+  {section:'การขนย้าย',type:'text',title:'ข้อควรระวังการขนย้าย',desc:'ยกด้วยเข่า ไม่เกินน้ำหนักที่กำหนด · ติดป้ายชั้นปลายทางทุกกล่อง · ระวังทางเดิน/ลิฟต์',url:''},
+  {section:'การขนย้าย',type:'video',title:'วิดีโอวันขนย้าย',desc:'ลำดับงานและการโหลดรถ',url:''},
+  {section:'การขนย้าย',type:'pdf',title:'แผนผังจุดจอด/เส้นทางรถ (PDF)',desc:'Ari Hills → BTS',url:''},
+];
+function ytEmbed(u){if(!u)return null;var m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);if(m)return'https://www.youtube.com/embed/'+m[1];var v=u.match(/vimeo\.com\/(\d+)/);if(v)return'https://player.vimeo.com/video/'+v[1];return null;}
+function gMedia(it){var t=(it.type||'').toLowerCase();
+  if(t==='image'||t==='box'){ if(it.url)return'<div class="gmedia" data-img="'+it.url+'"><span class="gtag">'+(t==='box'?'กล่อง':'รูป')+'</span><img loading="lazy" src="'+it.url+'" alt=""></div>';
+    return'<div class="gmedia"><div class="gph"><b>🖼️ รูปจะแสดงที่นี่</b><span>ใส่ลิงก์รูปในชีต Guide</span></div></div>'; }
+  if(t==='video'){var em=ytEmbed(it.url);
+    if(em)return'<div class="gmedia gembedwrap"><iframe class="gembed" src="'+em+'" allowfullscreen loading="lazy"></iframe></div>';
+    if(it.url)return'<div class="gmedia gembedwrap"><video class="gvid" controls preload="none" '+(it.thumb?'poster="'+it.thumb+'"':'')+' src="'+it.url+'"></video></div>';
+    return'<div class="gmedia"><div class="gph"><b>▶️ วิดีโอจะแสดงที่นี่</b><span>ใส่ลิงก์วิดีโอในชีต Guide</span></div></div>'; }
+  if(t==='pdf')return'<div class="gmedia gpdf"><div class="gph"><b>📄 PDF</b></div></div>';
+  return'';}
+function guideHTML(guide){
+  if(!guide||!guide.length)return'<div class="gempty">ยังไม่มีข้อมูลในหน้านี้<br><small>เพิ่มรูป/วิดีโอ/PDF ได้ในชีต “Guide”</small></div>';
+  var order=[],map={};
+  guide.forEach(function(it){var s=it.section||'อื่น ๆ';if(!map[s]){map[s]=[];order.push(s);}map[s].push(it);});
+  return order.map(function(sec){
+    var cards=map[sec].map(function(it){
+      var btn=it.type==='pdf'?(it.url?'<a class="gbtn" href="'+it.url+'" target="_blank" rel="noopener">เปิด PDF ↗</a>':'<span class="gbtn dis">รอลิงก์ PDF</span>'):'';
+      return'<div class="gcard">'+gMedia(it)+'<div class="gbody"><div class="gtitle">'+(it.title||'')+'</div>'+(it.desc?'<div class="gdesc">'+it.desc+'</div>':'')+btn+'</div></div>';
+    }).join('');
+    return'<div class="gsec"><h3 class="gsec-h">'+sec+'</h3><div class="ggrid">'+cards+'</div></div>';
+  }).join('');
+}
+function suppliesHTML(g){
+  if(!g.deptSupplies)return'';
+  function card(dept){
+    var s=g.deptSupplies[dept]; if(!s)return'';
+    var rows=(s.items||[]).map(function(it){return'<div class="suprow"><span>'+it[0]+'</span><b>'+it[1]+' '+(it[2]||'')+'</b></div>';}).join('');
+    var org=s.origin?' · ต้นทาง <b>'+s.origin+'</b>':'';
+    var head=curDept<0?'<div class="supdept">'+dept+'</div>':'';
+    return'<div class="supbox">'+head+'<div class="suphead">📦 ของที่ต้องใช้ (หลังตรวจนับ)'+org+'</div>'+rows+'</div>';
+  }
+  var html=curDept>=0?card(g.depts[curDept]):g.depts.filter(function(d){return g.deptSupplies[d];}).map(card).join('');
+  return html?'<div class="sectlabel" style="margin-top:16px">ของที่ต้องใช้ในการขนย้าย</div>'+html:'';
+}
 const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
 const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
 const MONTHS=[8,9,10,11],YEAR=2026,DOW=['S','M','T','W','T','F','S'];
@@ -284,6 +952,7 @@ function applyData(d){
   ACT={};HEX={};MID={};WHITENUM=new Set();STD_STEPS=[];
   (d.activities||[]).forEach(a=>{ACT[a.key]={name:a.th,en:a.en||''};HEX[a.key]=a.color;MID[a.key]=lighten(a.color,.3);if(isDark(MID[a.key]))WHITENUM.add(a.key);STD_STEPS.push(a.key);});
   GROUPS=d.groups||[];
+  GUIDE=(d.guide&&d.guide.length)?d.guide:(FALLBACK.guide||[]);
   renderHome();
   hideLoader();
 }
@@ -295,7 +964,8 @@ function markMap(g){const m={};effSteps(g).forEach(([k,,,cal])=>(cal||[]).forEac
 
 /* ===== HOME ===== */
 function renderHome(){
-  $('homeScroll').innerHTML=GROUPS.map((g,gi)=>{
+  const banner=`<button class="databanner" data-nav="data"><span class="dbi">📦</span><span class="dbt"><b>ข้อมูล / คู่มือ</b><small>ขั้นตอนแพ็คกล่อง · ข้อมูลกล่อง · การขนย้าย</small></span><span class="chev">›</span></button>`;
+  $('homeScroll').innerHTML=banner+GROUPS.map((g,gi)=>{
     const hc=g.hc?` · ${g.hc} คน`:'';
     const rows=`<button class="drow all" data-g="${gi}" data-d="-1"><span class="dn">ทั้งชั้น (รวมทุกฝ่าย)</span><span class="chev">›</span></button>`+
       g.depts.map((d,di)=>`<button class="drow" data-g="${gi}" data-d="${di}"><span class="dn">${d}</span><span class="chev">›</span></button>`).join('');
@@ -319,7 +989,7 @@ function renderDetail(){
     return `<div class="task"><span class="tdot" style="background:${HEX[k]||'#999'}"></span>
       <div><div class="tname">${a.name}</div><div class="ten">${a.en}</div><div class="twhen${tbd}">${when}</div>${time?`<div class="ttime">${time}</div>`:''}</div></div>`;
   }).join('');
-  $('detailScroll').innerHTML=`${note}<div class="sectlabel">รายละเอียดงานที่ต้องทำ</div>${tasks}`;
+  $('detailScroll').innerHTML=`${note}<div class="sectlabel">รายละเอียดงานที่ต้องทำ</div>${tasks}${suppliesHTML(g)}`;
 }
 
 /* ===== CALENDAR (only months with work) ===== */
@@ -364,15 +1034,21 @@ function openDayPopup(dayEl){
   popup.hidden=false;
 }
 popup.addEventListener('click',e=>{if(e.target.closest('[data-close]'))popup.hidden=true;});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')popup.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){popup.hidden=true;$('lightbox').hidden=true;}});
+
+/* ===== DATA / GUIDE ===== */
+function renderData(){ $('dataScroll').innerHTML='<div style="padding-bottom:6px">'+guideHTML(GUIDE)+'</div>'; }
+const lb=$('lightbox');
+$('dataScroll').addEventListener('click',e=>{const m=e.target.closest('[data-img]');if(m){$('lbImg').src=m.dataset.img;lb.hidden=false;}});
+lb.addEventListener('click',e=>{if(e.target.closest('[data-lbclose]'))lb.hidden=true;});
 
 /* ===== navigation ===== */
 function go(name){
-  ['home','detail','cal'].forEach(n=>$('screen'+n[0].toUpperCase()+n.slice(1)).classList.toggle('on',n===name));
+  ['home','detail','cal','data'].forEach(n=>$('screen'+n[0].toUpperCase()+n.slice(1)).classList.toggle('on',n===name));
   const tb=$('tabbar');
   tb.hidden=(name==='home');
   tb.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.nav===name));
-  const sc={home:'homeScroll',detail:'detailScroll',cal:'calScroll'}[name];
+  const sc={home:'homeScroll',detail:'detailScroll',cal:'calScroll',data:'dataScroll'}[name];
   if($(sc)) $(sc).scrollTop=0;
 }
 document.body.addEventListener('click',e=>{
@@ -381,6 +1057,7 @@ document.body.addEventListener('click',e=>{
   if(t==='home') go('home');
   else if(t==='detail'){ if(curGroup<0) return go('home'); renderDetail(); go('detail'); }
   else if(t==='cal'){ if(curGroup<0) return go('home'); renderCal(); go('cal'); }
+  else if(t==='data'){ renderData(); go('data'); }
 });
 
 /* ===== theme switch ===== */
@@ -410,7 +1087,35 @@ function loadData(){
   document.head.appendChild(s);
 }
 $('refreshBtn').onclick=loadData;
-loadData();
+loadData();</script>
+
+<script>
+(function(){
+  function isMobileView(){
+    var iw = window.innerWidth || document.documentElement.clientWidth;
+    var coarse = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+    return iw <= 900 || (coarse && iw <= 1366);
+  }
+  var mode = isMobileView() ? 'mobile' : 'desktop';
+  document.documentElement.setAttribute('data-mode', mode);
+  // inject the chosen UI's CSS
+  var st = document.createElement('style');
+  st.textContent = document.getElementById('css-'+mode).textContent;
+  document.head.appendChild(st);
+  // inject the chosen UI's HTML into #root
+  document.getElementById('root').innerHTML = document.getElementById('html-'+mode).textContent;
+  // run the chosen UI's script
+  var sc = document.createElement('script');
+  sc.textContent = document.getElementById('js-'+mode).textContent;
+  document.body.appendChild(sc);
+  // safety: hide loader if a UI never does within 14s
+  setTimeout(function(){var l=document.getElementById('loader'); if(l){l.classList.add('hide');}}, 14000);
+  // reload if the device crosses the phone/desktop boundary (e.g. rotate iPad)
+  var was = isMobileView(), t;
+  window.addEventListener('resize', function(){
+    clearTimeout(t); t=setTimeout(function(){ if(isMobileView()!==was) location.reload(); }, 350);
+  });
+})();
 </script>
 </body>
 </html>
