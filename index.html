@@ -152,6 +152,11 @@
   .itime{font-size:10px; color:var(--ink-soft); display:block; margin-top:1px}
   .item.sel{background:#eef2fb; box-shadow:inset 3px 0 0 var(--ac)}
   .item.dim{opacity:.4}
+  .istat{display:inline-flex; align-items:center; gap:4px; font-size:9px; font-weight:700; color:#fff; background:var(--sc); padding:2px 8px; border-radius:999px; margin-top:4px; width:fit-content; letter-spacing:.02em}
+  .istat i{width:5px; height:5px; border-radius:50%; background:#fff; opacity:.9}
+  .sheet-item .istat{margin-top:5px}
+  .day.today .num{box-shadow:0 0 0 2px #2563eb, 0 0 0 4px rgba(37,99,235,.22)}
+  .day.today.act .num{box-shadow:0 0 0 2px #2563eb}
 
   /* supplies (after counting) */
   .supsec{margin-top:12px; border-top:1px solid var(--line); padding-top:11px}
@@ -326,8 +331,8 @@ const FALLBACK={
     {key:'report',th:'ส่ง Report ยืนยันรายการ',en:'Confirm Report',color:'#8a5cd1'},
     {key:'move',th:'ขนย้ายออก',en:'Move Out',color:'#c62b1f'},
     {key:'test',th:'Test / ติดตั้งระบบ',en:'Test / System Setup',color:'#f07c2c'},
-    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#16a34a'},
-    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#8e8e8e'},
+    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#4f46e5'},
+    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#a16207'},
   ],
   groups:[
     {phase:1,route:R1,week:'WEEK 1',floor:'BTS ชั้น 22',hc:229,depts:['IT Infra (50)','IT PS (59)','IT AI (11)','IT MIS (59)','IT SEC (50)'],
@@ -406,6 +411,17 @@ function guideHTML(guide){
 let ACT={}, HEX={}, MID={}, WHITE=new Set(), WHITENUM=new Set(), STD_STEPS=[], GROUPS=[], GUIDE=[];
 const GRAY_EMPTY='#dde1e9';
 const SHORT={meet:'ประชุม',furni:'นับเฟอร์',box:'รับกล่อง',pack:'แพ็ค',final:'เช็ค',count:'นับกล่อง',report:'รายงาน',move:'ขนย้าย',test:'ติดตั้ง',work:'เริ่มงาน',ret:'คืนกล่อง'};
+const STATUS={done:{t:'ดำเนินการแล้ว',c:'#16a34a'},active:{t:'กำลังดำเนินการ',c:'#2563eb'},pending:{t:'รอดำเนินการ',c:'#94a3b8'}};
+function _today(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function statusOf(cal){
+  if(!cal||!cal.length)return null;
+  const now=_today();
+  const ds=cal.map(c=>{const p=c.split('-');return new Date(YEAR,+p[0]-1,+p[1]);}).sort((a,b)=>a-b);
+  if(now>ds[ds.length-1])return'done';
+  if(now>=ds[0])return'active';
+  return'pending';
+}
+function statusPill(cal){const s=statusOf(cal);if(!s)return'';const o=STATUS[s];return`<span class="istat st-${s}" style="--sc:${o.c}"><i></i>${o.t}</span>`;}
 const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
 const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
 const MONTHS=[8,9,10,11], YEAR=2026, DOW=['S','M','T','W','T','F','S'];
@@ -438,10 +454,10 @@ function effSteps(g){return curDept<0 ? stepsOf(g) : deptStepsOf(g, g.depts[curD
 function markMap(g){const m={};effSteps(g).forEach(([k,,,cal])=>(cal||[]).forEach(d=>{(m[d]=m[d]||[]).push(k);}));return m;}
 
 function itemHTML(steps){
-  return steps.map(([k,when,time])=>{
+  return steps.map(([k,when,time,cal])=>{
     const tbd=when==='รอกำหนดการ'?' tbd':''; const a=ACT[k]||{name:k,en:''};
     return `<button class="item" data-key="${k}" style="--ac:${HEX[k]||'#999'}"><span class="idot"></span>
-      <span><span class="iname">${a.name}</span><span class="ien">${a.en}</span><span class="iwhen${tbd}">${when}</span>${time?`<span class="itime">${time}</span>`:''}</span></button>`;
+      <span><span class="iname">${a.name}</span><span class="ien">${a.en}</span><span class="iwhen${tbd}">${when}</span>${time?`<span class="itime">${time}</span>`:''}${statusPill(cal)}</span></button>`;
   }).join('');
 }
 function suppliesHTML(g){
@@ -481,15 +497,17 @@ function renderList(g){
 
 function monthGrid(month,marks){
   const first=new Date(YEAR,month-1,1); const lead=first.getDay(); const days=new Date(YEAR,month,0).getDate();
+  const T=_today(); const tToday=(T.getFullYear()===YEAR&&T.getMonth()+1===month)?T.getDate():-1;
   let cells='',col=0; const push=h=>{cells+=h;col=(col+1)%7;};
   for(let i=0;i<lead;i++) push(`<div class="day pad" data-col="${col}"></div>`);
   for(let d=1;d<=days;d++){
+    const td=d===tToday?' today':'';
     const acts=marks[month+'-'+d];
-    if(!acts){push(`<div class="day inmonth" data-col="${col}"><span class="num">${d}</span></div>`);continue;}
+    if(!acts){push(`<div class="day inmonth${td}" data-col="${col}"><span class="num">${d}</span></div>`);continue;}
     const dk=` data-keys="${acts.join(',')}"`; const p=acts[0]; const fill=MID[p]||GRAY_EMPTY;
     const more=acts.length>1?` +${acts.length-1}`:'';
     const lbl=(SHORT[p]||((ACT[p]&&ACT[p].name)||p))+more;
-    push(`<div class="day inmonth act${WHITENUM.has(p)?' ln':''}" data-col="${col}" data-date="${month}-${d}"${dk} data-fill="${fill}" style="--fill:${fill};--lc:${HEX[p]}"><span class="num">${d}</span><span class="lbl">${lbl}</span></div>`);
+    push(`<div class="day inmonth act${WHITENUM.has(p)?' ln':''}${td}" data-col="${col}" data-date="${month}-${d}"${dk} data-fill="${fill}" style="--fill:${fill};--lc:${HEX[p]}"><span class="num">${d}</span><span class="lbl">${lbl}</span></div>`);
   }
   return `<div class="cal"><h3>${EN_MONTH[month]} ${YEAR}<span>${TH_MONTH[month]}</span></h3>
     <div class="cal-grid">${DOW.map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div>`;
@@ -544,7 +562,7 @@ function openDayPopup(dayEl,keys){
     const when=(st[1]&&st[1]!=='รอกำหนดการ')?`<div class="sheet-when">${st[1]}</div>`:'';
     const time=st[2]?`<div class="sheet-time">${st[2]}</div>`:'';
     return `<div class="sheet-item"><span class="sheet-dot" style="background:${HEX[k]||'#999'}"></span>
-      <div><div class="sheet-name">${a.name}</div><div class="sheet-en">${a.en}</div>${when}${time}</div></div>`;
+      <div><div class="sheet-name">${a.name}</div><div class="sheet-en">${a.en}</div>${when}${time}${statusPill(st[3])}</div></div>`;
   }).join('');
   document.getElementById('sheetDate').textContent=`${dd} ${TH_MONTH[m]||''} ${YEAR}`;
   document.getElementById('sheetSub').textContent=`วัน${wd} · ${g.floor} · ${scope}`;
@@ -697,6 +715,11 @@ loadData();</script>
   .twhen{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--accent); margin-top:3px}
   .twhen.tbd{color:#9aa4bb}
   .ttime{font-size:11px; color:var(--ink-soft); margin-top:1px}
+  .istat{display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:#fff; background:var(--sc); padding:3px 9px; border-radius:999px; margin-top:6px; width:fit-content; letter-spacing:.02em}
+  .istat i{width:5px; height:5px; border-radius:50%; background:#fff; opacity:.9}
+  .sitem .istat{margin-top:6px}
+  .day.today .num{box-shadow:0 0 0 2px #2563eb, 0 0 0 4px rgba(37,99,235,.22)}
+  .day.today.act .num{box-shadow:0 0 0 2px #2563eb}
 
   /* CALENDAR */
   .cal{background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:13px 12px 16px; margin-bottom:13px}
@@ -910,8 +933,8 @@ const FALLBACK={
     {key:'report',th:'ส่ง Report ยืนยันรายการ',en:'Confirm Report',color:'#8a5cd1'},
     {key:'move',th:'ขนย้ายออก',en:'Move Out',color:'#c62b1f'},
     {key:'test',th:'Test / ติดตั้งระบบ',en:'Test / System Setup',color:'#f07c2c'},
-    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#16a34a'},
-    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#8e8e8e'},
+    {key:'work',th:'นั่งทำงานที่ปลายทาง',en:'Work at Destination',color:'#4f46e5'},
+    {key:'ret',th:'คืนกล่องพัสดุ',en:'Return Boxes',color:'#a16207'},
   ],
   groups:[
     {phase:1,route:R1,week:'WEEK 1',floor:'BTS ชั้น 22',hc:229,depts:['IT Infra (50)','IT PS (59)','IT AI (11)','IT MIS (59)','IT SEC (50)'],
@@ -1003,6 +1026,17 @@ const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
 const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
 const MONTHS=[8,9,10,11],YEAR=2026,DOW=['S','M','T','W','T','F','S'];
 const SHORT={meet:'ประชุม',furni:'นับเฟอร์',box:'รับกล่อง',pack:'แพ็ค',final:'เช็ค',count:'นับกล่อง',report:'รายงาน',move:'ขนย้าย',test:'ติดตั้ง',work:'เริ่มงาน',ret:'คืนกล่อง'};
+const STATUS={done:{t:'ดำเนินการแล้ว',c:'#16a34a'},active:{t:'กำลังดำเนินการ',c:'#2563eb'},pending:{t:'รอดำเนินการ',c:'#94a3b8'}};
+function _today(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function statusOf(cal){
+  if(!cal||!cal.length)return null;
+  const now=_today();
+  const ds=cal.map(c=>{const p=c.split('-');return new Date(YEAR,+p[0]-1,+p[1]);}).sort((a,b)=>a-b);
+  if(now>ds[ds.length-1])return'done';
+  if(now>=ds[0])return'active';
+  return'pending';
+}
+function statusPill(cal){const s=statusOf(cal);if(!s)return'';const o=STATUS[s];return`<span class="istat st-${s}" style="--sc:${o.c}"><i></i>${o.t}</span>`;}
 const TH_WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 let curGroup=-1, curDept=-1;
 const $=id=>document.getElementById(id);
@@ -1047,10 +1081,10 @@ function renderDetail(){
   const steps=effSteps(g);
   const dated=steps.some(s=>s[3]&&s[3].length);
   const note=dated?'':`<div class="note">* ฝ่าย/ชั้นนี้ยังไม่มีกำหนดการรายวัน — กรอกวัน/เวลาใน Google Sheet แล้วจะขึ้นให้อัตโนมัติ</div>`;
-  const tasks=steps.map(([k,when,time])=>{
+  const tasks=steps.map(([k,when,time,cal])=>{
     const tbd=when==='รอกำหนดการ'?' tbd':''; const a=ACT[k]||{name:k,en:''};
     return `<div class="task"><span class="tdot" style="background:${HEX[k]||'#999'}"></span>
-      <div><div class="tname">${a.name}</div><div class="ten">${a.en}</div><div class="twhen${tbd}">${when}</div>${time?`<div class="ttime">${time}</div>`:''}</div></div>`;
+      <div><div class="tname">${a.name}</div><div class="ten">${a.en}</div><div class="twhen${tbd}">${when}</div>${time?`<div class="ttime">${time}</div>`:''}${statusPill(cal)}</div></div>`;
   }).join('');
   $('detailScroll').innerHTML=`${note}<div class="sectlabel">รายละเอียดงานที่ต้องทำ</div>${tasks}${suppliesHTML(g)}`;
 }
@@ -1066,15 +1100,17 @@ function renderCal(){
 }
 function monthGrid(month,marks){
   const first=new Date(YEAR,month-1,1); const lead=first.getDay(); const days=new Date(YEAR,month,0).getDate();
+  const T=_today(); const tToday=(T.getFullYear()===YEAR&&T.getMonth()+1===month)?T.getDate():-1;
   let cells='',col=0; const push=h=>{cells+=h;col=(col+1)%7;};
   for(let i=0;i<lead;i++) push(`<div class="day pad" data-col="${col}"></div>`);
   for(let d=1;d<=days;d++){
+    const td=d===tToday?' today':'';
     const acts=marks[month+'-'+d];
-    if(!acts){push(`<div class="day inmonth" data-col="${col}"><span class="num">${d}</span></div>`);continue;}
+    if(!acts){push(`<div class="day inmonth${td}" data-col="${col}"><span class="num">${d}</span></div>`);continue;}
     const dk=` data-keys="${acts.join(',')}"`, p=acts[0], fill=MID[p]||'#ccc';
     const more=acts.length>1?` +${acts.length-1}`:'';
     const lbl=(SHORT[p]||((ACT[p]&&ACT[p].name)||p))+more;
-    push(`<div class="day inmonth act${WHITENUM.has(p)?' ln':''}" data-col="${col}" data-date="${month}-${d}"${dk} style="--fill:${fill};--lc:${HEX[p]}"><span class="num">${d}</span><span class="lbl">${lbl}</span></div>`);
+    push(`<div class="day inmonth act${WHITENUM.has(p)?' ln':''}${td}" data-col="${col}" data-date="${month}-${d}"${dk} style="--fill:${fill};--lc:${HEX[p]}"><span class="num">${d}</span><span class="lbl">${lbl}</span></div>`);
   }
   return `<div class="cal"><h3>${EN_MONTH[month]} ${YEAR}<span>${TH_MONTH[month]}</span></h3>
     <div class="cal-grid">${DOW.map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div></div>`;
@@ -1091,7 +1127,7 @@ function openDayPopup(dayEl){
   const rows=keys.map(k=>{const st=sm[k]||[k,'',''];const a=ACT[k]||{name:k,en:''};
     const w=(st[1]&&st[1]!=='รอกำหนดการ')?`<div class="swhen">${st[1]}</div>`:'';
     const t=st[2]?`<div class="stime">${st[2]}</div>`:'';
-    return `<div class="sitem"><span class="sdot" style="background:${HEX[k]||'#999'}"></span><div><div class="sname">${a.name}</div><div class="sen">${a.en}</div>${w}${t}</div></div>`;}).join('');
+    return `<div class="sitem"><span class="sdot" style="background:${HEX[k]||'#999'}"></span><div><div class="sname">${a.name}</div><div class="sen">${a.en}</div>${w}${t}${statusPill(st[3])}</div></div>`;}).join('');
   $('sheetDate').textContent=`${dd} ${TH_MONTH[m]||''} ${YEAR}`;
   $('sheetSub').textContent=`วัน${wd} · ${scopeName(g)}`;
   $('sheetBody').innerHTML=rows||`<div class="sempty">ไม่มีรายการในวันนี้</div>`;
