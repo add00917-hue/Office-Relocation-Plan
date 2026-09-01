@@ -129,7 +129,12 @@
 
   .panel-list{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:15px 15px 13px; display:flex; flex-direction:column; min-height:0}
   .pl-head{border-bottom:1px solid var(--line); padding-bottom:11px; margin-bottom:10px}
-  .pl-top{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap}
+  .pl-top{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .spanchip{display:inline-flex; align-items:center; gap:5px; font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600; color:var(--brand); background:var(--soft); padding:4px 10px; border-radius:8px; white-space:nowrap}
+  .spanchip svg{opacity:.85}
+  .groupnav button small{display:block; font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:8.5px; opacity:.68; margin-top:2px; letter-spacing:.02em}
+  .groupnav button.active small{opacity:.9}
+  .groupnav button{line-height:1.15; text-align:center}
   .weekbadge{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:11px; color:#fff; background:var(--brand); padding:3px 8px; border-radius:6px}
   .pl-floor{font-size:17px; font-weight:700}
   .routetag{font-size:11px; color:var(--ink-soft); margin-top:4px}
@@ -422,6 +427,14 @@ function statusOf(cal){
   return'pending';
 }
 function statusPill(cal){const s=statusOf(cal);if(!s)return'';const o=STATUS[s];return`<span class="istat st-${s}" style="--sc:${o.c}"><i></i>${o.t}</span>`;}
+const MON_ABBR=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function spanText(steps){
+  const all=[]; (steps||[]).forEach(s=>(s[3]||[]).forEach(c=>{const p=c.split('-');all.push(new Date(YEAR,+p[0]-1,+p[1]));}));
+  if(!all.length) return '';
+  all.sort((a,b)=>a-b); const a=all[0],b=all[all.length-1];
+  const f=d=>d.getDate()+' '+MON_ABBR[d.getMonth()+1];
+  return a.getTime()===b.getTime()?f(a):f(a)+' – '+f(b);
+}
 const EN_MONTH={8:'August',9:'September',10:'October',11:'November'};
 const TH_MONTH={8:'สิงหาคม',9:'กันยายน',10:'ตุลาคม',11:'พฤศจิกายน'};
 const MONTHS=[8,9,10,11], YEAR=2026, DOW=['S','M','T','W','T','F','S'];
@@ -480,13 +493,14 @@ function renderList(g){
     g.depts.map((d,i)=>`<button class="dpill ${curDept===i?'active':''}" data-d="${i}">${d}</button>`).join('');
   const steps=effSteps(g);
   const dated=steps.some(s=>s[3]&&s[3].length);
+  const span=spanText(steps);
   const scopeName=curDept<0?'ทั้งชั้น (รวมทุกฝ่าย)':g.depts[curDept];
   const note=dated
     ? `<div class="scopenote">กำหนดการของ <b>${scopeName}</b>${curDept<0?' — กดเลือกฝ่ายด้านบนเพื่อดูวันเฉพาะฝ่าย':''}</div>`
     : `<div class="scopenote">* ${curDept<0?'ยังไม่มีกำหนดการรายวัน':'ฝ่าย '+scopeName+' ยังไม่มีกำหนดการ'} — กรอกวัน/เวลาในไฟล์ Google Sheet</div>`;
   listPanel.innerHTML=`
     <div class="pl-head">
-      <div class="pl-top"><span class="weekbadge">${g.week}</span><span class="pl-floor">${g.floor}</span></div>
+      <div class="pl-top"><span class="weekbadge">${g.week}</span><span class="pl-floor">${g.floor}</span>${span?`<span class="spanchip"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>${span}</span>`:''}</div>
       <div class="routetag">เส้นทาง: <b>${g.route}</b></div>${hc}
       <div class="deptpills" id="deptpills">${pills}</div>
     </div>
@@ -605,7 +619,7 @@ function renderGroupNav(phase){
     const idxs=GROUPS.map((g,i)=>[g,i]).filter(([g])=>g.phase===phase&&g.route===rt).map(([,i])=>i);
     if(!idxs.length)return;
     const rg=document.createElement('div');rg.className='rgroup';rg.innerHTML=`<span class="rlabel">${rt}</span>`;
-    idxs.forEach(i=>{const b=document.createElement('button');b.dataset.i=i;b.textContent=GROUPS[i].floor.replace('Ari Hills ','Ari ').replace('BTS ','');b.onclick=()=>selectGroup(i);rg.appendChild(b);});
+    idxs.forEach(i=>{const b=document.createElement('button');b.dataset.i=i;const nm=GROUPS[i].floor.replace('Ari Hills ','Ari ').replace('BTS ','');const sp=spanText(stepsOf(GROUPS[i]));b.innerHTML=nm+(sp?`<small>${sp}</small>`:'');b.onclick=()=>selectGroup(i);rg.appendChild(b);});
     groupnav.appendChild(rg);
   });
   selectGroup(GROUPS.findIndex(g=>g.phase===phase));
@@ -693,6 +707,9 @@ loadData();</script>
   /* HOME: floor sections + department buttons */
   .fsec{margin-bottom:16px}
   .fsec-h{display:flex; align-items:center; gap:8px; padding:0 4px 8px; flex-wrap:wrap}
+  .fspan{display:inline-flex; align-items:center; font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; color:var(--accent); background:var(--accent-soft); padding:3px 9px; border-radius:7px; white-space:nowrap}
+  .drow-l{display:flex; flex-direction:column; gap:2px; min-width:0}
+  .drng{font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:500; color:var(--ink-soft)}
   .fbadge{font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; color:#fff; background:var(--accent); padding:3px 8px; border-radius:6px}
   .fname{font-size:15px; font-weight:700}
   .froute{font-size:10.5px; color:var(--ink-soft); width:100%; padding-left:2px}
@@ -1037,6 +1054,14 @@ function statusOf(cal){
   return'pending';
 }
 function statusPill(cal){const s=statusOf(cal);if(!s)return'';const o=STATUS[s];return`<span class="istat st-${s}" style="--sc:${o.c}"><i></i>${o.t}</span>`;}
+const MON_ABBR=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function spanText(steps){
+  const all=[]; (steps||[]).forEach(s=>(s[3]||[]).forEach(c=>{const p=c.split('-');all.push(new Date(YEAR,+p[0]-1,+p[1]));}));
+  if(!all.length) return '';
+  all.sort((a,b)=>a-b); const a=all[0],b=all[all.length-1];
+  const f=d=>d.getDate()+' '+MON_ABBR[d.getMonth()+1];
+  return a.getTime()===b.getTime()?f(a):f(a)+' – '+f(b);
+}
 const TH_WD=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 let curGroup=-1, curDept=-1;
 const $=id=>document.getElementById(id);
@@ -1064,9 +1089,11 @@ function renderHome(){
   const banner=SHOW_GUIDE?`<button class="databanner" data-nav="data"><span class="dbi">📦</span><span class="dbt"><b>ข้อมูล / คู่มือ</b><small>ขั้นตอนแพ็คกล่อง · ข้อมูลกล่อง · การขนย้าย</small></span><span class="chev">›</span></button>`:'';
   $('homeScroll').innerHTML=banner+GROUPS.map((g,gi)=>{
     const hc=g.hc?` · ${g.hc} คน`:'';
-    const rows=`<button class="drow all" data-g="${gi}" data-d="-1"><span class="dn">ทั้งชั้น (รวมทุกฝ่าย)</span><span class="chev">›</span></button>`+
-      g.depts.map((d,di)=>`<button class="drow" data-g="${gi}" data-d="${di}"><span class="dn">${d}</span><span class="chev">›</span></button>`).join('');
-    return `<div class="fsec"><div class="fsec-h"><span class="fbadge">${g.week}</span><span class="fname">${g.floor}</span>
+    const fspan=spanText(stepsFloor(g));
+    const rng=d=>{const sp=spanText(stepsDept(g,d));return sp?`<span class="drng">${sp}</span>`:'';};
+    const rows=`<button class="drow all" data-g="${gi}" data-d="-1"><span class="drow-l"><span class="dn">ทั้งชั้น (รวมทุกฝ่าย)</span>${fspan?`<span class="drng">${fspan}</span>`:''}</span><span class="chev">›</span></button>`+
+      g.depts.map((d,di)=>`<button class="drow" data-g="${gi}" data-d="${di}"><span class="drow-l"><span class="dn">${d}</span>${rng(d)}</span><span class="chev">›</span></button>`).join('');
+    return `<div class="fsec"><div class="fsec-h"><span class="fbadge">${g.week}</span><span class="fname">${g.floor}</span>${fspan?`<span class="fspan">${fspan}</span>`:''}
       <span class="froute">เส้นทาง: <b>${g.route}</b>${hc}</span></div>${rows}</div>`;
   }).join('')||'<div class="sempty" style="padding:20px">ไม่มีข้อมูล</div>';
 }
@@ -1077,7 +1104,8 @@ function scopeName(g){return curDept<0?'ทั้งชั้น (รวม)':g.
 function renderDetail(){
   const g=GROUPS[curGroup];
   $('dName').textContent=scopeName(g);
-  $('dSub').textContent=g.floor+' · '+g.route;
+  const span=spanText(effSteps(g));
+  $('dSub').textContent=g.floor+' · '+g.route+(span?' · '+span:'');
   const steps=effSteps(g);
   const dated=steps.some(s=>s[3]&&s[3].length);
   const note=dated?'':`<div class="note">* ฝ่าย/ชั้นนี้ยังไม่มีกำหนดการรายวัน — กรอกวัน/เวลาใน Google Sheet แล้วจะขึ้นให้อัตโนมัติ</div>`;
