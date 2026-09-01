@@ -1221,9 +1221,11 @@ loadData();</script>
 (function(){
   function isMobileView(){
     var w = window.innerWidth || document.documentElement.clientWidth;
-    var h = window.innerHeight || document.documentElement.clientHeight;
-    // phones only (smallest screen side is small). Tablets/iPads and monitors use the desktop system page.
-    return Math.min(w, h) <= 600;
+    // A real pointer (mouse/trackpad) -> desktop system page, whatever the window size.
+    var desktopPointer = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    if (desktopPointer) return false;
+    // Touch devices: phones (narrow) -> mobile app; iPad/tablets (wider) -> desktop system page.
+    return w <= 700;
   }
   var mode = isMobileView() ? 'mobile' : 'desktop';
   document.documentElement.setAttribute('data-mode', mode);
